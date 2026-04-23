@@ -1,7 +1,7 @@
 {
-  "name": "eggd_<tool_name>",
-  "title": "eggd_<tool_name>",
-  "summary": "description",
+  "name": "eggd_treehouse_pipeline",
+  "title": "eggd_treehouse_pipeline",
+  "summary": "DNA Nexus app to run Treehouse pipeline 'expression' and 'qc' functionality ",
   "dxapi": "1.0.0",
   "version": "1.0.0",
   "properties": {
@@ -9,95 +9,68 @@
     },
   "inputSpec": [
     {
-      "name": "input_file",
-      "class": "file",
-      "optional": true,
-      "label": "Name of input file",
-      "patterns": [
-        "*.tsv", "*.vcf", "*.bed", "*.xlsx"
-      ],
-      "help": "Description"
+      "name": "treehouse_pipeline_github_url",
+      "class": "string",
+      "optional": false,
+      "label": "URL Treehouse Pipeline GitHub repository",
+      "patterns": ["*.git"],
+      "help": "URL for Official Treehouse Pipeline GitHub repository"
+    },
+     {
+      "name": "fastqs",
+      "label": "fastq files",
+      "help": "gzipped fastq files to run Treehouse Pipeline on",
+      "class": "array:file",
+      "patterns": ["*.fastq.gz", "*.fq.gz"]
     },
     {
-      "name": "input_file_array",
+      "name": "references_files",
       "class": "array:file",
       "optional": false,
-      "label": "Name of input file array",
+      "label": "Name of reference file array",
       "suggestions": [
         {
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "path": "/folder1/folder2/"
+        "project": "project-J73BXz84Kyb1FPV98kqBQ65V",
+        "path": "/treehouse_pipeline_references/"
         }
       ],
-      "help": "Description"
-    },
-    {
-      "name": "input_boolean",
-      "class": "boolean",
-      "optional": true,
-      "default": true,
-      "label": "Name of field",
-      "help": "Description"
-    },
-    {
-      "name": "input_string",
-      "class": "string",
-      "label": "Input string field name",
-      "optional": true,
-      "default": "default string input",
-      "help": "Description"
+      "help": "Reference files needed to run Treehouse Pipeline: kallisto_hg38.idx, starIndex_hg38_no_alt.tar.gz, rsem_ref_hg38_no_alt.tar.gz"
     }
   ],
   "outputSpec": [
     {
-      "name": "output_file",
+      "name": "output_sorted_bam",
       "class": "file",
-      "label": "output file",
-      "patterns": [
-        "*.tsv", "*.vcf", "*.bed", "*.xlsx"
-      ],
-      "help": "Description"
+      "label": "output sample.sorted.bam",
+      "patterns": ["*.sorted.bam"],
+      "help": "Output sorted.bam file"
     },
     {
-      "name": "output_files_array",
+      "name": "output_expression_files",
       "class": "array:file",
-      "label": "output files",
+      "label": "output expression files",
       "optional": true,
-      "help": "Description"
+      "help": "All expression output files from the EXPRESSION functionality"
+    },
+    {
+      "name": "output_qc_files",
+      "class": "array:file",
+      "label": "output qc files",
+      "optional": true,
+      "help": "All qc output files from the QC functionality"
     }
-
   ],
   "runSpec": {
     "timeoutPolicy": {
       "*": {
-        "hours": 2
+        "hours": 14
       }
     },
     "distribution": "Ubuntu",
     "release": "20.04",
     "version": "0",
     "interpreter": "bash",
-    "file": "src/code.sh",
-    "assetDepends": [
-      {
-        "name": "bedtools",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/bedtools/bedtools_v2.30.0",
-        "version": "2.30.0"
-      },
-      {
-        "name": "htslib",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/htslib/htslib_v1.15.0",
-        "version": "1.15.0"
-      },
-      {
-        "name": "python_packages",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/python_packages/python_packages_v1.1.0",
-        "version": "1.1.0"
-      }
-    ]
+    "file": "src/code.sh"
   },
   "developers":[
     "org-emee_1"
@@ -109,7 +82,7 @@
     "aws:eu-central-1": {
       "systemRequirements": {
         "*": {
-          "instanceType": "mem1_ssd1_v2_x2"
+          "instanceType": "mem1_ssd1_v2_x36"
         }
       }
     }
