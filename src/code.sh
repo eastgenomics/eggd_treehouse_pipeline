@@ -115,6 +115,14 @@ stage_references() {
     echo ">>> All expected reference files present."
 }
 
+load_docker_images(){
+    # Load docker images for rnaseq-cgl-pipeline and umend_qc available
+    echo ">>> Running: Load docker images"
+
+    mkdir -p docker_images
+    docker load -i /home/dnanexus/in/docker_images/0/*.tar.gz
+    docker load -i /home/dnanexus/in/docker_images/1/*.tar.gz
+}
 
 run_pipelines() {
     # Runs the Treehouse expression pipeline followed by the QC pipeline.
