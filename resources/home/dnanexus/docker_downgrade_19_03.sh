@@ -21,20 +21,15 @@ cd "$TEMP_DIR"
 
 echo "Downloading Docker 19.03.15 packages..."
 
-# Download Docker CE 19.03.15 packages for Ubuntu 16.04 (Xenial)
-wget -q "${input_url_1}"
-wget -q "${input_url_2}"
-wget -q "${input_url_3}"
-
 # Install packages in correct order
 echo "Installing containerd.io..."
-sudo dpkg -i containerd.io_1.2.13-2_amd64.deb || sudo apt-get install -f -y
+sudo dpkg -i /home/dnanexus/in/docker_packages/containerd.io_1.2.13-2_amd64.deb || sudo apt-get install -f -y
 
 echo "Installing docker-ce-cli..."
-sudo dpkg -i docker-ce-cli_19.03.15~3-0~ubuntu-*.deb || sudo apt-get install -f -y
+sudo dpkg -i /home/dnanexus/in/docker_packages/docker-ce-cli_19.03.15~3-0~ubuntu-*.deb || sudo apt-get install -f -y
 
 echo "Installing docker-ce..."
-sudo dpkg -i docker-ce_19.03.15~3-0~ubuntu-*.deb || sudo apt-get install -f -y
+sudo dpkg -i /home/dnanexus/in/docker_packages/docker-ce_19.03.15~3-0~ubuntu-*.deb || sudo apt-get install -f -y
 
 # Fix any dependency issues
 sudo apt-get install -f -y
