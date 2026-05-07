@@ -17,7 +17,7 @@ extract_pipeline() {
     # All subsequent steps assume the working directory is pipelines/
     echo ">>> Extracting Treehouse pipelines repository..."
     mkdir -p /home/dnanexus/repo_extract
-    tar -xzf "${github_repo_path}" -C repo_extract
+    tar -xzf "${github_repo}" -C repo_extract
     REPO_DIR=$(find repo_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)
     if [[ -z "${REPO_DIR}" ]]; then
         echo "ERROR: failed to extract repository"
