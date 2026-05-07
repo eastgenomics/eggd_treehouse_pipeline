@@ -32,12 +32,6 @@
       "class": "array:file",
       "optional": false,
       "label": "Name of reference file array",
-      "suggestions": [
-        {
-        "project": "project-J73BXz84Kyb1FPV98kqBQ65V",
-        "path": "/treehouse_pipeline_references/"
-        }
-      ],
       "help": "Reference files needed to run Treehouse Pipeline: kallisto_hg38.idx, starIndex_hg38_no_alt.tar.gz, rsem_ref_hg38_no_alt.tar.gz"
     }
   ],
