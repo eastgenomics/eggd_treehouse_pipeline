@@ -88,7 +88,7 @@ stage_fastqs() {
     echo ">>> Merging R2 lanes -> samples/${sample_name}_R2_merged.fastq.gz"
     cat "${r2_files[@]}" > "samples/${sample_name}_R2_merged.fastq.gz"
     
-    rm samples/TEST.bam samples/TEST_R1.fastq.gz samples/TEST_R1.fastq.gz #remove already present files
+    rm samples/TEST.bam samples/TEST_R1.fastq.gz samples/TEST_R2.fastq.gz #remove already present files
     echo ">>> samples/ contents:"
     ls -lh samples/
 }
