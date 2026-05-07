@@ -87,7 +87,7 @@ stage_references() {
     echo ">>> Staging reference files into references/..."
     mkdir -p references
 
-    mv /home/dnanexus/in/references_files/* references/
+    mv /home/dnanexus/in/references_files/*/* references/
 
     echo ">>> references/ contents:"
     ls -lh references/
