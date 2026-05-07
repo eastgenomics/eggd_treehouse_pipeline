@@ -52,7 +52,7 @@ stage_fastqs() {
     # cat on .gz files is valid — gzip format supports concatenated streams
     # and all downstream tools (STAR, Kallisto, etc.) handle them correctly.
     echo ">>> Staging FASTQ input files..."
-    mkdir -p fastq_staging samples
+    mkdir -p samples
 
     # Derive a sample name from the first R1 filename, stripping lane/read
     # suffixes to produce a clean prefix (e.g. SAMPLE_L001_R1.fastq.gz -> SAMPLE)
@@ -63,35 +63,13 @@ stage_fastqs() {
 
     echo ">>> Inferred sample name: ${sample_name}"
 
-    # Download all R1 files
-    echo ">>> Downloading R1 file(s)..."
-    local r1_files=()
-    for r1 in "${fastq_R1[@]}"; do
-        local r1_name
-        r1_name=$(dx describe "${r1}" --name)
-        echo "    ${r1_name}"
-        dx download "${r1}" -o "fastq_staging/${r1_name}"
-        r1_files+=("fastq_staging/${r1_name}")
-    done
-
-    # Download all R2 files
-    echo ">>> Downloading R2 file(s)..."
-    local r2_files=()
-    for r2 in "${fastq_R2[@]}"; do
-        local r2_name
-        r2_name=$(dx describe "${r2}" --name)
-        echo "    ${r2_name}"
-        dx download "${r2}" -o "fastq_staging/${r2_name}"
-        r2_files+=("fastq_staging/${r2_name}")
-    done
-
     # Merge lanes by concatenation into samples/
     # cat is safe for .gz: gzip supports multi-stream files
     echo ">>> Merging R1 lanes -> samples/${sample_name}_R1_merged.fastq.gz"
-    cat "${r1_files[@]}" > "samples/${sample_name}_R1_merged.fastq.gz"
+    cat /home/dnanexus/in/fastq_R1/* > "samples/${sample_name}_R1_merged.fastq.gz"
 
     echo ">>> Merging R2 lanes -> samples/${sample_name}_R2_merged.fastq.gz"
-    cat "${r2_files[@]}" > "samples/${sample_name}_R2_merged.fastq.gz"
+    cat /home/dnanexus/in/fastq_R2/* > "samples/${sample_name}_R2_merged.fastq.gz"
     
     rm samples/TEST.bam samples/TEST_R1.fastq.gz samples/TEST_R2.fastq.gz #remove already present files
     echo ">>> samples/ contents:"
