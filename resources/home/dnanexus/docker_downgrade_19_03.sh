@@ -23,13 +23,13 @@ echo "Downloading Docker 19.03.15 packages..."
 
 # Install packages in correct order
 echo "Installing containerd.io..."
-sudo dpkg -i /home/dnanexus/in/docker_packages/containerd.io_1.2.13-2_amd64.deb || sudo apt-get install -f -y
+sudo dpkg -i /home/dnanexus/in/docker_packages/0/containerd.io_1.2.13-2_amd64.deb || sudo apt-get install -f -y
 
 echo "Installing docker-ce-cli..."
-sudo dpkg -i /home/dnanexus/in/docker_packages/docker-ce-cli_19.03.15~3-0~ubuntu-*.deb || sudo apt-get install -f -y
+sudo dpkg -i /home/dnanexus/in/docker_packages/1/docker-ce-cli_19.03.15~3-0~ubuntu-xenial_amd64.deb || sudo apt-get install -f -y
 
 echo "Installing docker-ce..."
-sudo dpkg -i /home/dnanexus/in/docker_packages/docker-ce_19.03.15~3-0~ubuntu-*.deb || sudo apt-get install -f -y
+sudo dpkg -i /home/dnanexus/in/docker_packages/2/docker-ce_19.03.15~3-0~ubuntu-xenial_amd64.deb || sudo apt-get install -f -y
 
 # Fix any dependency issues
 sudo apt-get install -f -y
