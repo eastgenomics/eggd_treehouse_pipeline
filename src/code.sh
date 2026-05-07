@@ -122,6 +122,17 @@ load_docker_images(){
     mkdir -p docker_images
     docker load -i /home/dnanexus/in/docker_images/0/*.tar.gz
     docker load -i /home/dnanexus/in/docker_images/1/*.tar.gz
+
+    #Replace the docker image in the Makefile
+    OLD_rnaseq='quay.io/ucsc_cgl/rnaseq-cgl-pipeline@sha256:785eee9f750ab91078d84d1ee779b6f74717eafc09e49da817af6b87619b0756'
+    NEW_rnaseq=$(docker images --format="{{.Repository}} {{.ID}}" | grep "rnaseq-cgl-pipeline" | cut -d' ' -f2)
+
+    sed -i "s#$OLD_rnaseq#$NEW_rnaseqW#g" Makefile
+
+    OLD_umend="ucsctreehouse/bam-umend-qc@sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f"
+    NEW_umend=$(docker images --format="{{.Repository}} {{.ID}}" | grep "umend" | cut -d' ' -f2)
+
+    sed -i "s#$OLD_umend#$NEW_umend#g" Makefile
 }
 
 run_pipelines() {
