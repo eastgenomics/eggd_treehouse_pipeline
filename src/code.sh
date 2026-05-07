@@ -87,7 +87,8 @@ stage_fastqs() {
 
     echo ">>> Merging R2 lanes -> samples/${sample_name}_R2_merged.fastq.gz"
     cat "${r2_files[@]}" > "samples/${sample_name}_R2_merged.fastq.gz"
-
+    
+    rm samples/TEST.bam samples/TEST_R1.fastq.gz samples/TEST_R1.fastq.gz #remove already present files
     echo ">>> samples/ contents:"
     ls -lh samples/
 }
@@ -103,7 +104,7 @@ stage_references() {
     echo ">>> Staging reference files into references/..."
     mkdir -p references
 
-    for ref in "${reference_files[@]}"; do
+    for ref in "${references_files[@]}"; do
         local ref_name
         ref_name=$(dx describe "${ref}" --name)
         echo "    Downloading: ${ref_name}"
