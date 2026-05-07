@@ -20,6 +20,7 @@ from the [UCSC-Treehouse/pipelines](https://github.com/UCSC-Treehouse/pipelines)
 | `fastq_R2` | array:file | One or more gzipped FASTQ files for read 2 (e.g. one per sequencing lane). Multiple files are concatenated in the order supplied before being passed to the pipeline. |
 | `reference_files` | array:file | The three reference files required by the Treehouse pipeline (see below). A project-level suggestion path is provided in the app so these can be selected from a shared reference folder. |
 | `github_repo` | file | Tar.gz file of the GitHub repository to use the Treehouse pipeline. |
+| `docker_packages` | array:file | Docker packages to install docker version 19.03.x. |
 
 ### Multi-lane FASTQ handling
 
