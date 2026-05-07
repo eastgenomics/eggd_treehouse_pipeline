@@ -4,25 +4,28 @@
   "summary": "DNA Nexus app to run Treehouse pipeline 'expression' and 'qc' functionality ",
   "dxapi": "1.0.0",
   "version": "1.0.0",
+  "whatsNew": {
+    "v1.0.0": "Initial release of the Treehouse expression and QC pipeline on DNAnexus"
+  },
   "properties": {
     "githubRelease": "1.0.0"
     },
   "inputSpec": [
     {
-      "name": "treehouse_pipeline_github_url",
-      "class": "string",
-      "optional": false,
-      "label": "URL Treehouse Pipeline GitHub repository",
-      "patterns": ["*.git"],
-      "default": "https://github.com/UCSC-Treehouse/pipelines.git",
-      "help": "URL for Official Treehouse Pipeline GitHub repository"
+      "name": "fastq_R1",
+      "label": "FASTQ R1 file",
+      "help": "Gzipped FASTQ file for read 1 of the sample. Filename must contain _R1, _R1_001, or _1 before the extension so the Treehouse Makefile can detect it.",
+      "class": "file",
+      "patterns": ["*.fastq.gz", "*.fq.gz"],
+      "optional": false
     },
-     {
-      "name": "fastqs",
-      "label": "fastq files",
-      "help": "gzipped fastq files to run Treehouse Pipeline on",
-      "class": "array:file",
-      "patterns": ["*.fastq.gz", "*.fq.gz"]
+    {
+      "name": "fastq_R2",
+      "label": "FASTQ R2 file",
+      "help": "Gzipped FASTQ file for read 2 of the sample. Filename must contain _R2, _R2_001, or _2 before the extension so the Treehouse Makefile can detect it.",
+      "class": "file",
+      "patterns": ["*.fastq.gz", "*.fq.gz"],
+      "optional": false
     },
     {
       "name": "references_files",
@@ -40,25 +43,20 @@
   ],
   "outputSpec": [
     {
-      "name": "output_sorted_bam",
-      "class": "file",
-      "label": "output sample.sorted.bam",
-      "patterns": ["*.sorted.bam"],
-      "help": "Output sorted.bam file"
+      "name": "expression_output",
+      "label": "Expression pipeline output files",
+      "help": "All output files from the Treehouse expression pipeline (outputs/expression/), including the results tar.gz, sorted BAM, and pipeline logs.",
+      "class": "array:file",
+      "patterns": ["*"],
+      "optional": false
     },
     {
-      "name": "output_expression_files",
+      "name": "qc_output",
+      "label": "QC pipeline output files",
+      "help": "All output files from the Treehouse bam-umend-qc pipeline (outputs/qc/), including bam_umend_qc.json, bam_umend_qc.tsv, and readDist.txt.",
       "class": "array:file",
-      "label": "output expression files",
-      "optional": true,
-      "help": "All expression output files from the EXPRESSION functionality"
-    },
-    {
-      "name": "output_qc_files",
-      "class": "array:file",
-      "label": "output qc files",
-      "optional": true,
-      "help": "All qc output files from the QC functionality"
+      "patterns": ["*"],
+      "optional": false
     }
   ],
   "runSpec": {
@@ -83,7 +81,7 @@
     "aws:eu-central-1": {
       "systemRequirements": {
         "*": {
-          "instanceType": "mem1_ssd1_v2_x36"
+          "instanceType": "mem1_ssd1_v2_x16"
         }
       }
     }
