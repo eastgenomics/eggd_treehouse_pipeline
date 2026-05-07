@@ -120,7 +120,7 @@ run_pipelines() {
     # Runs the Treehouse expression pipeline followed by the QC pipeline.
     # The qc target automatically picks up the sorted BAM produced by expression.
     echo ">>> Running: make expression"
-    make expression
+    #make expression
 
     echo ">>> Running: make qc"
     make qc
