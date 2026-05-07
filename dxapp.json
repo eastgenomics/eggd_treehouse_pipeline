@@ -33,6 +33,15 @@
       "optional": false,
       "label": "Name of reference file array",
       "help": "Reference files needed to run Treehouse Pipeline: kallisto_hg38.idx, starIndex_hg38_no_alt.tar.gz, rsem_ref_hg38_no_alt.tar.gz"
+    },
+    {
+      "name": "github_repo",
+      "class": "file",
+      "optional": false,
+      "patterns": ["*.tar.gz"],
+      "label": "GitHub repository of Treehouse pipeline as a tar.gz file",
+      "help": "Tar.gz file of the GitHub repository of Treehouse pipeline",
+      "default": {"$dnanexus_link": "file-J7y8Q284KybJzKk9k5J5B03x"}
     }
   ],
   "outputSpec": [
