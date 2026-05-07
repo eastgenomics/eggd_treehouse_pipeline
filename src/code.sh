@@ -9,142 +9,171 @@ export TZ=Europe/London
 # -e = exit on error; -x = output each line that is executed to log; -o pipefail = throw an error if there's an error in pipeline
 set -e -x -o pipefail
 
-
-_downgrade_docker(){
-    : '''
-    Downgrade Client and Server Docker to allow pulling docker images built in the old format
-    '''
-    source /home/dnanexus/resource/utils/docker_downgrade_19_03.sh
-}
-
-_download_inputs() {
-    : '''
-    Downloads input files, unpacks, set environment variables, and other setup steps
-    '''
-    mkdir -p /home/dnanexus/references_files \
-        /home/dnanexus/fastqs \
-        /treehouse_pipeline_github_url
-
-    dx-download-all-inputs --parallel
-    
-
-    # Move all the fastqs from subdirectories into one directory
-    find ~/in/fastqs -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/fastqs
-
-    # Move all the reference from subdirectories into one directory
-    find ~/in/references_files -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/references_files
-
-    #Move the Treehouse Pipeline GitHUb url into specific folder:
-    mv ~in/treehouse_pipeline_github_url - type f -name "*" -print0 | xargs -0 -I {} mv {} ~/treehouse_pipeline_github_url
-}
-
-_install_treehouse_pipeline() {
-    : '''
-    Clone Treehouse pipeline repository
-    '''
-    url_github=$(echo ~/treehouse_pipeline_github_url/*.git)
-    git clone $url_github
-}
-
-_trim_fastq_endings () {
-  : ''' Takes array of fastq files with their read number ("R1" or "R2"), 
-  trims the endings off every file, and returns as an array
-  local fastq_array=("$@")
-  Define strings to remove from file name in test arrays
-  This app can take fastqs with .fastq.gz suffixes so need to
-  identify which suffix the input files have
-  '''
-  local read_to_cut=$1
-  if [[ "${fastq_array[1]}" == *".fastq.gz" ]]; then
-    fastq_suffix=".fastq.gz"
-    export fastq_suffix
-  else
-    echo "Suffixes of fastq files not recognised as .fastq.gz"
-    exit 1
-  fi
-  
-  for i in "${!fastq_array[@]}"; do
-    fastq_array[$i]=${fastq_array[$i]//$read_to_cut/};
-    fastq_array[$i]=${fastq_array[$i]//$fastq_suffix/};
-  done
-  echo ${fastq_array[@]}
-}
-
-_fastq_checks() {
-    : '''
-    Checks on the fastq files
-    '''
-    # Tests on the reads:
-    R1=($(ls *_R1_*))
-    R2=($(ls *_R2_*))
-    ### Tests
-    ## Check that there are the same number of files in each list
-    # There should be an equal number of R1 and R2 files
-    if [[ ${#R1[@]} -ne ${#R2[@]} ]]; then
-        echo "The number of R1 and R2 files for this sample are not equal"
-        exit 1
-    fi
-    
-    R1_test=$(_trim_fastq_endings "_R1_" ${R1[@]})
-    R2_test=$(_trim_fastq_endings "_R2_" ${R2[@]})
-
-    # Test that when "R1" and "R2" are removed the two arrays have identical file names
-    for i in "${!R1_test[@]}"; do
-        if [[ ! "${R2_test}" =~ "${R1_test[$i]}" ]]; then
-        echo "Each R1 FASTQ does not appear to have a matching R2 FASTQ"
-        exit 1
-    fi
-
-    export R1 \
-        R2 \
-done
+downgrade_docker() {
+    # Downgrades Docker to v19.03 using the script bundled under
+    # resources/home/dnanexus/, which DNAnexus deploys automatically to ~/
+    echo ">>> Downgrading Docker to version 19.03..."
+    sudo bash ~/docker_downgrade_19_03.sh
+    echo ">>> Docker version after downgrade: $(docker --version)"
 }
 
 
-_setup(){
-    : '''
-    Set up steps
-    '''
-    #Move fastq.gz:
-    rm ~/pipelines/samples/TEST*
-    mv ~/fastqs/*fast.gz ~/pipelines/samples/
-
-    #Concate fastq.gz:
-    sample_name=$(echo $R1[0] | cut -d '_' -f 1)
-    cat ${sample_name}_S2_L00*_R1_001.fastq.gz > ${sample_name}_merged_R1.fastq.gz
-    cat ${sample_name}_S2_L00*_R2_001.fastq.gz > ${sample_name}_merged_R2.fastq.gz
-    mv ${sample_name}_S2_L00*_R*_001.fastq.gz /home/dnanexus/ # to leave only the merged fastq.gz in the correct folder
-    cd ..
-    export sample_name
-
-    #Move reference files:
-    mkdir -p ~/pipelines/references
-    mv ~/references/* ~/pipelines/references/
-
-    #Create outdirs:
-    mkdir -p /home/dnanexus/out/output_qc_files \
-        /home/dnanexus/out/output_sorted_bam \
-        /home/dnanexus/out/output_expression_files
+clone_pipeline() {
+    # Clones the UCSC Treehouse pipelines repository and moves into it.
+    # All subsequent steps assume the working directory is pipelines/
+    echo ">>> Cloning UCSC Treehouse pipelines repository..."
+    git clone https://github.com/UCSC-Treehouse/pipelines.git
+    cd pipelines
 }
 
 
-_upload_outputs() {
-    : '''
-    Upload and save outputs
-    '''
-    mv ~/pipelines/outputs/qc/* /home/dnanexus/out/output_qc_files/
-    mv ~/pipelines/outputs/expression/*.sorted.bam /home/dnanexus/out/output_sorted_bam/
-    tar -zxvf ~/pipelines/outputs/expression/TEST_R1merged.tar.gz -C /home/dnanexus/out/output_expression_files
-    dx-upload-all-outputs
+stage_fastqs() {
+    # Downloads all R1 and R2 FASTQ files (one or more per read, e.g. one
+    # per sequencing lane) into a staging directory, then concatenates them
+    # into a single merged R1 and R2 file in samples/.
+    #
+    # The merged files are named:
+    #   samples/SAMPLE_R1_merged.fastq.gz
+    #   samples/SAMPLE_R2_merged.fastq.gz
+    #
+    # cat on .gz files is valid — gzip format supports concatenated streams
+    # and all downstream tools (STAR, Kallisto, etc.) handle them correctly.
+    echo ">>> Staging FASTQ input files..."
+    mkdir -p fastq_staging samples
+
+    # Derive a sample name from the first R1 filename, stripping lane/read
+    # suffixes to produce a clean prefix (e.g. SAMPLE_L001_R1.fastq.gz -> SAMPLE)
+    local first_r1_name
+    first_r1_name=$(dx describe "${fastq_R1[0]}" --name)
+    local sample_name
+    sample_name=$(echo "${first_r1_name}" | sed 's/_L[0-9]\+//g; s/_R[12].*//; s/_[12]\..*//; s/\.fastq\.gz//; s/\.fq\.gz//')
+
+    echo ">>> Inferred sample name: ${sample_name}"
+
+    # Download all R1 files
+    echo ">>> Downloading R1 file(s)..."
+    local r1_files=()
+    for r1 in "${fastq_R1[@]}"; do
+        local r1_name
+        r1_name=$(dx describe "${r1}" --name)
+        echo "    ${r1_name}"
+        dx download "${r1}" -o "fastq_staging/${r1_name}"
+        r1_files+=("fastq_staging/${r1_name}")
+    done
+
+    # Download all R2 files
+    echo ">>> Downloading R2 file(s)..."
+    local r2_files=()
+    for r2 in "${fastq_R2[@]}"; do
+        local r2_name
+        r2_name=$(dx describe "${r2}" --name)
+        echo "    ${r2_name}"
+        dx download "${r2}" -o "fastq_staging/${r2_name}"
+        r2_files+=("fastq_staging/${r2_name}")
+    done
+
+    # Merge lanes by concatenation into samples/
+    # cat is safe for .gz: gzip supports multi-stream files
+    echo ">>> Merging R1 lanes -> samples/${sample_name}_R1_merged.fastq.gz"
+    cat "${r1_files[@]}" > "samples/${sample_name}_R1_merged.fastq.gz"
+
+    echo ">>> Merging R2 lanes -> samples/${sample_name}_R2_merged.fastq.gz"
+    cat "${r2_files[@]}" > "samples/${sample_name}_R2_merged.fastq.gz"
+
+    echo ">>> samples/ contents:"
+    ls -lh samples/
 }
+
+
+stage_references() {
+    # Downloads all files from the reference_files array into references/,
+    # preserving their original filenames. The Treehouse Makefile expects
+    # exactly these three files to be present:
+    #   references/starIndex_hg38_no_alt.tar.gz
+    #   references/rsem_ref_hg38_no_alt.tar.gz
+    #   references/kallisto_hg38.idx
+    echo ">>> Staging reference files into references/..."
+    mkdir -p references
+
+    for ref in "${reference_files[@]}"; do
+        local ref_name
+        ref_name=$(dx describe "${ref}" --name)
+        echo "    Downloading: ${ref_name}"
+        dx download "${ref}" -o "references/${ref_name}"
+    done
+
+    echo ">>> references/ contents:"
+    ls -lh references/
+
+    # Validate that the expected filenames are present
+    local expected=("starIndex_hg38_no_alt.tar.gz" "rsem_ref_hg38_no_alt.tar.gz" "kallisto_hg38.idx")
+    for f in "${expected[@]}"; do
+        if [[ ! -f "references/${f}" ]]; then
+            echo "ERROR: Expected reference file not found: references/${f}"
+            echo "       Please ensure the reference_files input contains files with these exact names:"
+            echo "         starIndex_hg38_no_alt.tar.gz"
+            echo "         rsem_ref_hg38_no_alt.tar.gz"
+            echo "         kallisto_hg38.idx"
+            exit 1
+        fi
+    done
+
+    echo ">>> All expected reference files present."
+}
+
+
+run_pipelines() {
+    # Runs the Treehouse expression pipeline followed by the QC pipeline.
+    # The qc target automatically picks up the sorted BAM produced by expression.
+    echo ">>> Running: make expression"
+    make expression
+
+    echo ">>> Running: make qc"
+    make qc
+}
+
+
+upload_outputs() {
+    # Uploads all files from outputs/expression/ and outputs/qc/ back to
+    # DNAnexus and sets the job output arrays.
+    echo ">>> Uploading expression outputs..."
+    expression_output=()
+    while IFS= read -r -d '' f; do
+        echo "    Uploading: ${f}"
+        file_id=$(dx upload "${f}" --brief)
+        expression_output+=("${file_id}")
+    done < <(find outputs/expression -type f -print0)
+
+    echo ">>> Uploading QC outputs..."
+    qc_output=()
+    while IFS= read -r -d '' f; do
+        echo "    Uploading: ${f}"
+        file_id=$(dx upload "${f}" --brief)
+        qc_output+=("${file_id}")
+    done < <(find outputs/qc -type f -print0)
+
+    echo ">>> Upload complete."
+    echo "    Expression files uploaded: ${#expression_output[@]}"
+    echo "    QC files uploaded:         ${#qc_output[@]}"
+
+    dx-jobutil-add-output expression_output --array --class=file "${expression_output[@]}"
+    dx-jobutil-add-output qc_output --array --class=file "${qc_output[@]}"
+}
+
 
 main() {
-    _downgrade_docker
-    _download_inputs
-    _install_treehouse_pipeline
-    _fastq_checks
-    cd ~/pipelines
-    make expression qc #Call the makefile of the Treehouse Pipeline on the functionality "expression" and "qc"
-    cd ..
-    _upload_outputs
+
+    echo "=========================================="
+    echo " eggd_treehouse_pipeline v1.0.0"
+    echo " UCSC Treehouse expression + QC pipelines"
+    echo "=========================================="
+
+    downgrade_docker
+    clone_pipeline
+    stage_fastqs
+    stage_references
+    run_pipelines
+    upload_outputs
+
+    echo ">>> eggd_treehouse_pipeline complete."
 }
