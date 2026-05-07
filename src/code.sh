@@ -175,6 +175,7 @@ main() {
     extract_pipeline
     stage_fastqs
     stage_references
+    load_docker_images
     run_pipelines
     upload_outputs
 
