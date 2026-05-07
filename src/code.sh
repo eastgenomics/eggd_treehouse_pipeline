@@ -16,7 +16,7 @@ downgrade_docker() {
     sudo bash ~/docker_downgrade_19_03.sh
     echo ">>> Docker version after downgrade: $(docker --version)"
     local version
-    version=$(docker --version| grep "19.03")
+    version=$(docker --version| grep -o "19.03")
     
     if [[ "${version}" != "19.03" ]]; then
         echo "ERROR: Docker version is not 19.03"
