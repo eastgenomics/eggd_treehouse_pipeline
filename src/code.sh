@@ -59,7 +59,7 @@ stage_fastqs() {
     local first_r1_name
     first_r1_name=$(dx describe "${fastq_R1[0]}" --name)
     local sample_name
-    sample_name=$(echo "${first_r1_name}" | sed 's/_L[0-9]\+//g; s/_R[12].*//; s/_[12]\..*//; s/\.fastq\.gz//; s/\.fq\.gz//')
+    sample_name=$(echo "${first_r1_name}" | cut -d '_' -f 1)
 
     echo ">>> Inferred sample name: ${sample_name}"
 
