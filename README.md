@@ -55,7 +55,7 @@ Update the `project` and `path` values in the `reference_files` suggestion block
 
 ## How does this app work?
 
-1. **Docker downgrade** – `docker_downgrade_19_03.sh` (bundled under `resources/home/dnanexus/`, deployed automatically to `~/` on the worker) is executed with `sudo`. This replaces the default DNAnexus worker Docker with version 19.03, which is required for the legacy Treehouse pipeline images.
+1. **Docker downgrade** – `docker_downgrade_19_03.sh` (bundled under `resources/home/dnanexus/`, deployed automatically to `~/` on the worker) is executed with `sudo`. This replaces the default DNAnexus worker Docker with version 19.03, which is required for the legacy Treehouse pipeline images. [Claude AI](https://github.com/UCSC-Treehouse/pipelines/issues/42).
 
 2. **Repository clone** – The Treehouse pipelines repo is cloned from GitHub into the worker's working directory.
 
@@ -119,4 +119,4 @@ Expected runtime: ~8–10 hours for expression + ~1–2 hours for QC on a typica
 
 ---
 
-## This app was made by East GLH with the help of [Claude AI](https://platform.claude.com/)
+## This app was made by East GLH with the help of [Claude AI](https://platform.claude.com/).
