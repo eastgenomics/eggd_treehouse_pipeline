@@ -48,7 +48,12 @@
       "class": "array:file",
       "optional": false,
       "label": "Docker CE 19.03.15 packages",
-      "help": "Docker CE 19.03.15 packages for installation"
+      "help": "Docker CE 19.03.15 packages for installation",
+      "default": [
+        { "$dnanexus_link": "file-J7yB9V04KybBF2Q81Z52kB8y" },
+        { "$dnanexus_link": "file-J7yB9bQ4Kyb2v78vv2vbjzGv" },
+        { "$dnanexus_link": "file-J7yB9Y84Kyb892G533ky40jZ" }
+      ]
     }
   ],
   "outputSpec": [
