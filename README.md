@@ -119,4 +119,5 @@ Expected runtime: ~8–10 hours for expression + ~1–2 hours for QC on a typica
 
 ---
 
-## This app was made by East GLH with the help of [Claude AI](https://platform.claude.com/).
+## This app was made by East GLH
+[Claude AI](https://platform.claude.com/) was used to assemble the code.
