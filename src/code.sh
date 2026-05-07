@@ -18,11 +18,20 @@ downgrade_docker() {
 }
 
 
-clone_pipeline() {
+extract_pipeline() {
     # Clones the UCSC Treehouse pipelines repository and moves into it.
     # All subsequent steps assume the working directory is pipelines/
-    echo ">>> Cloning UCSC Treehouse pipelines repository..."
-    git clone https://github.com/UCSC-Treehouse/pipelines.git
+    echo ">>> Extracting Treehouse pipelines repository..."
+    mkdir -p /home/dnanexus/repo_extract
+    tar -xzf "${github_repo_path}" -C repo_extract
+    REPO_DIR=$(find repo_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)
+    if [[ -z "${REPO_DIR}" ]]; then
+        echo "ERROR: failed to extract repository"
+        exit 1
+    fi
+
+    echo "Repository extracted to:"
+    echo "${REPO_DIR}"
     cd pipelines
 }
 
@@ -169,7 +178,7 @@ main() {
     echo "=========================================="
 
     downgrade_docker
-    clone_pipeline
+    extract_pipeline
     stage_fastqs
     stage_references
     run_pipelines
