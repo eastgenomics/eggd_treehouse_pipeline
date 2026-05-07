@@ -22,9 +22,9 @@ cd "$TEMP_DIR"
 echo "Downloading Docker 19.03.15 packages..."
 
 # Download Docker CE 19.03.15 packages for Ubuntu 16.04 (Xenial)
-wget -q https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/containerd.io_1.2.13-2_amd64.deb
-wget -q https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce-cli_19.03.15~3-0~ubuntu-xenial_amd64.deb
-wget -q https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_19.03.15~3-0~ubuntu-xenial_amd64.deb
+wget -q "${input_url_1}"
+wget -q "${input_url_2}"
+wget -q "${input_url_3}"
 
 # Install packages in correct order
 echo "Installing containerd.io..."
