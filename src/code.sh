@@ -9,7 +9,7 @@ export TZ=Europe/London
 # -e = exit on error; -x = output each line that is executed to log; -o pipefail = throw an error if there's an error in pipeline
 set -e -x -o pipefail
 
-
+dx-download-all-inputs # download inputs from json
 
 
 extract_pipeline() {
@@ -17,13 +17,11 @@ extract_pipeline() {
     # All subsequent steps assume the working directory is pipelines/
     echo ">>> Extracting Treehouse pipelines repository..."
 
-    mkdir -p repo_extract
+    mkdir /home/dnanexus/repo_extract
 
-    echo "Input tarball path: ${github_repo_path}"
+    tar xvzf /home/dnanexus/in/github_repo/pipelines.tar.gz -C /home/dnanexus/repo_extract
 
-    tar -xzf "${github_repo_path}" -C repo_extract
-
-    REPO_DIR=$(find repo_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)
+    REPO_DIR=$(find /home/dnanexus/repo_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)
 
     if [[ -z "${REPO_DIR}" ]]; then
         echo "ERROR: failed to extract repository"
