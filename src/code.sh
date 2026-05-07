@@ -9,13 +9,7 @@ export TZ=Europe/London
 # -e = exit on error; -x = output each line that is executed to log; -o pipefail = throw an error if there's an error in pipeline
 set -e -x -o pipefail
 
-downgrade_docker() {
-    # Downgrades Docker to v19.03 using the script bundled under
-    # resources/home/dnanexus/, which DNAnexus deploys automatically to ~/
-    echo ">>> Downgrading Docker to version 19.03..."
-    sudo bash ~/docker_downgrade_19_03.sh
-    echo ">>> Docker version after downgrade: $(docker --version)"
-}
+
 
 
 extract_pipeline() {
@@ -130,6 +124,13 @@ stage_references() {
     echo ">>> All expected reference files present."
 }
 
+downgrade_docker() {
+    # Downgrades Docker to v19.03 using the script bundled under
+    # resources/home/dnanexus/, which DNAnexus deploys automatically to ~/
+    echo ">>> Downgrading Docker to version 19.03..."
+    sudo bash ~/docker_downgrade_19_03.sh
+    echo ">>> Docker version after downgrade: $(docker --version)"
+}
 
 run_pipelines() {
     # Runs the Treehouse expression pipeline followed by the QC pipeline.
@@ -177,10 +178,10 @@ main() {
     echo " UCSC Treehouse expression + QC pipelines"
     echo "=========================================="
 
-    downgrade_docker
     extract_pipeline
     stage_fastqs
     stage_references
+    downgrade_docker
     run_pipelines
     upload_outputs
 
