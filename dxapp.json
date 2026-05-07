@@ -42,6 +42,30 @@
       "label": "GitHub repository of Treehouse pipeline as a tar.gz file",
       "help": "Tar.gz file of the GitHub repository of Treehouse pipeline",
       "default": {"$dnanexus_link": "file-J7y8Q284KybJzKk9k5J5B03x"}
+    },
+    {
+      "name": "input_url_1",
+      "class": "string",
+      "optional": false,
+      "label": "URL for containerd.io_1.2.13-2_amd64.deb docker CE 19.03.15",
+      "help": "URL for containerd.io_1.2.13-2_amd64.deb to install Docker 19.03.15",
+      "default": "https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/containerd.io_1.2.13-2_amd64.deb"
+    },
+    {
+      "name": "input_url_2",
+      "class": "string",
+      "optional": false,
+      "label": "URL for docker-ce-cli_19.03.15~3-0~ubuntu-xenial_amd64.deb docker CE 19.03.15",
+      "help": "URL for docker-ce-cli_19.03.15~3-0~ubuntu-xenial_amd64.debto install Docker 19.03.15",
+      "default": "https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce-cli_19.03.15~3-0~ubuntu-xenial_amd64.deb"
+    },
+    {
+      "name": "input_url_3",
+      "class": "string",
+      "optional": false,
+      "label": "URL for docker-ce_19.03.15~3-0~ubuntu-xenial_amd64.debdocker CE 19.03.15",
+      "help": "URL for docker-ce_19.03.15~3-0~ubuntu-xenial_amd64.deb to install Docker 19.03.15",
+      "default": "https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_19.03.15~3-0~ubuntu-xenial_amd64.deb"
     }
   ],
   "outputSpec": [
