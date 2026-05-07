@@ -87,12 +87,7 @@ stage_references() {
     echo ">>> Staging reference files into references/..."
     mkdir -p references
 
-    for ref in "${references_files[@]}"; do
-        local ref_name
-        ref_name=$(dx describe "${ref}" --name)
-        echo "    Downloading: ${ref_name}"
-        dx download "${ref}" -o "references/${ref_name}"
-    done
+    mv /home/dnanexus/in/references_files/* references/
 
     echo ">>> references/ contents:"
     ls -lh references/
