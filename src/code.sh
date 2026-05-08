@@ -113,7 +113,7 @@ run_load_and_tag_docker(){
     cutadapt_tar=$(ls /home/dnanexus/in/docker_images/*/cutadapt*.tar.gz)
     kallisto_tar=$(ls /home/dnanexus/in/docker_images/*/kallisto*.tar.gz)
     star_tar=$(ls /home/dnanexus/in/docker_images/*/star*.tar.gz)
-    rsem_tar=$(ls /home/dnanexus/in/docker_images/*/rsem*.tar.gz)
+    rsem_tar=$(ls /home/dnanexus/in/docker_images/*/rsem_1*.tar.gz)
     fastqc_tar=$(ls /home/dnanexus/in/docker_images/*/fastqc*.tar.gz)
     gencode_hugo_mapping_tar=$(ls /home/dnanexus/in/docker_images/*/gencode_hugo_mapping*.tar.gz)
     samtools_tar=$(ls /home/dnanexus/in/docker_images/*/samtools*.tar.gz)
