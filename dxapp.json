@@ -59,11 +59,20 @@
       "name": "docker_images",
       "class": "array:file",
       "optional": false,
-      "label": "Docker images for rnaseq-cgl-pipeline and umend_qc",
-      "help": "DNA Nexus file for Docker images for rnaseq-cgl-pipeline and umend_qc",
+      "label": "Docker images for rnaseq-cgl-pipeline, umend_qc and all other required tools",
+      "help": "DNA Nexus file for Docker images for rnaseq-cgl-pipeline, umend_qc and all other required tools",
       "default": [
         { "$dnanexus_link": "file-J7yFK484Kyb5P9qxKfy54X47" },
-        { "$dnanexus_link": "file-J7yFY1j4Kyb57VjzBB11qJ39" }
+        { "$dnanexus_link": "file-J7yFY1j4Kyb57VjzBB11qJ39" },
+        { "$dnanexus_link": "file-J7yqkGQ4Kyb978z0B8037KbB" },
+        { "$dnanexus_link": "file-J7yqkP04Kyb15Y0p38ppjKVX" },
+        { "$dnanexus_link": "file-J7yqkPj4Kyb0YZvYxB8qFfyq" },
+        { "$dnanexus_link": "file-J7yqkQj4Kyb0Bv2j95v280pq" },
+        { "$dnanexus_link": "file-J7yqkV84KybJZ9XZVY4yvgyy" },
+        { "$dnanexus_link": "file-J7yqkX04Kyb978z0B8037KbV" },
+        { "$dnanexus_link": "file-J7yqkY04Kyb15Y0p38ppjKVg" },
+        { "$dnanexus_link": "file-J7yqkYj4Kyb607Y9YV35gQbg" },
+        { "$dnanexus_link": "file-J7yqkb84KybF17308k56G6Kf" }
       ]
     }
   ],
