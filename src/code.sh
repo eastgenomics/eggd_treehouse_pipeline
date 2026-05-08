@@ -228,7 +228,12 @@ upload_outputs() {
     # Stage and upload expression and QC outputs to DNAnexus
     echo ">>> Staging expression outputs..."
     mkdir -p /home/dnanexus/out/expression_output
+    
+    tar xvzf outputs/expression/*.tar.gz -C outputs/expression/
+    rm outputs/expression/*.tar.gz
+    
     mv outputs/expression/* /home/dnanexus/out/expression_output/
+
 
     echo ">>> Staging QC outputs..."
     mkdir -p /home/dnanexus/out/qc_output
