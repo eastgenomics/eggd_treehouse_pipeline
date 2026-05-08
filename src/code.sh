@@ -123,7 +123,7 @@ run_load_and_tag_docker(){
         "quay.io/ucsc_cgl/cutadapt:1.9--6bd44edd2b8f8f17e25c5a268fedaab65fa851d2"
 
     load_and_tag "$kallisto_tar" \
-        "quay.io/ucsc_cgl/kallisto:0.42.4--35ac87df5b21a8e8e8d159f26864ac1e1db8cf86"
+        "quay.io/ucsc_cgl/kallisto:0.43.1--355c19b1fb6fbb85f7f8293e95fb8a1e9d0da163"
 
     load_and_tag "$star_tar" \
         "quay.io/ucsc_cgl/star:2.4.2a--bcbd5122b69ff6ac4ef61958e47bde94001cfe80"
