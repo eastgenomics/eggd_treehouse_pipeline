@@ -243,12 +243,17 @@ upload_outputs() {
         qc_output+=("${file_id}")
     done < <(find outputs/qc -type f -print0)
 
+    for file_id in "${expression_output[@]}"; do
+    dx-jobutil-add-output expression_output --array --class=file "${file_id}"
+    done
+
+    for file_id in "${qc_output[@]}"; do
+    dx-jobutil-add-output qc_output --array --class=file "${file_id}"
+    done
+
     echo ">>> Upload complete."
     echo "    Expression files uploaded: ${#expression_output[@]}"
     echo "    QC files uploaded:         ${#qc_output[@]}"
-
-    dx-jobutil-add-output expression_output --array --class=file "${expression_output[@]}"
-    dx-jobutil-add-output qc_output --array --class=file "${qc_output[@]}"
 }
 
 
