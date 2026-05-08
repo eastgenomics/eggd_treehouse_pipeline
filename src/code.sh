@@ -88,18 +88,20 @@ load_and_tag() {
     #   full_image_name : the full original name to tag it with
     #                     (e.g. "quay.io/ucsc_cgl/kallisto:0.42.4--35ac87df...")
 
-    local tar_path="$1"
-    local full_image_name="$2"
+        local tar_path
+    local full_image_name
+    tar_path="$1"
+    full_image_name="$2"
 
     echo ">>> Loading: $tar_path"
-    local image_id
-    image_id=$(docker load -i "$tar_path" | grep -oP 'sha256:\S+|[a-f0-9]{12,}' | tail -1)
+    docker load -i "$tar_path"
 
-    echo ">>> Tagging image $image_id as $full_image_name"
-    docker tag "$image_id" "$full_image_name"
-
-    echo ">>> Verified:"
-    docker images | grep "$full_image_name%%:*"
+    echo ">>> Verifying image $full_image_name is present:"
+    if ! docker images --format="{{.Repository}}:{{.Tag}}" | grep -qF "$full_image_name"; then
+        echo "ERROR: Expected image '$full_image_name' not found after loading $tar_path"
+        exit 1
+    fi
+    echo ">>> OK: $full_image_name"
 }
 
 run_load_and_tag_docker(){
