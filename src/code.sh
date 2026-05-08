@@ -91,15 +91,15 @@ load_and_tag() {
     local tar_path="$1"
     local full_image_name="$2"
 
-    echo ">>> Loading: ${tar_path}"
+    echo ">>> Loading: $tar_path"
     local image_id
-    image_id=$(docker load -i "${tar_path}" | grep -oP 'sha256:\S+|[a-f0-9]{12,}' | tail -1)
+    image_id=$(docker load -i "$tar_path" | grep -oP 'sha256:\S+|[a-f0-9]{12,}' | tail -1)
 
-    echo ">>> Tagging image ${image_id} as ${full_image_name}"
-    docker tag "${image_id}" "${full_image_name}"
+    echo ">>> Tagging image $image_id as $full_image_name"
+    docker tag "$image_id" "$full_image_name"
 
     echo ">>> Verified:"
-    docker images | grep "${full_image_name%%:*}"
+    docker images | grep "$full_image_name%%:*"
 }
 
 run_load_and_tag_docker(){
@@ -117,28 +117,28 @@ run_load_and_tag_docker(){
     samtools_tar=$(ls /home/dnanexus/in/docker_images/*/samtools*.tar.gz)
     rsem_postprocess_tar=$(ls /home/dnanexus/in/docker_images/*/rsem_postprocess*.tar.gz)
 
-    load_and_tag "{$cutadapt_tar}" \
+    load_and_tag "$cutadapt_tar" \
         "quay.io/ucsc_cgl/cutadapt:1.9--6bd44edd2b8f8f17e25c5a268fedaab65fa851d2"
 
-    load_and_tag "{$kallisto_tar}" \
+    load_and_tag "$kallisto_tar" \
         "quay.io/ucsc_cgl/kallisto:0.42.4--35ac87df5b21a8e8e8d159f26864ac1e1db8cf86"
 
-    load_and_tag "{$star_tar}" \
+    load_and_tag "$star_tar" \
         "quay.io/ucsc_cgl/star:2.4.2a--bcbd5122b69ff6ac4ef61958e47bde94001cfe80"
 
-    load_and_tag "{$rsem_tar}" \
+    load_and_tag "$rsem_tar" \
         "quay.io/ucsc_cgl/rsem:1.2.25--d4275175cc8df36967db460b06337a14f40d2f21"
 
-    load_and_tag "{$fastqc_tar}" \
+    load_and_tag "$fastqc_tar" \
         "quay.io/ucsc_cgl/fastqc:0.11.5--be13567d00cd4c586edf8ae47d991815c8c72a49"
 
-    load_and_tag "{$gencode_hugo_mapping_tar}" \
+    load_and_tag "$gencode_hugo_mapping_tar" \
         "quay.io/ucsc_cgl/gencode_hugo_mapping:1.0--cb4865d02f9199462e66410f515c4dabbd061e4d"
     
-    load_and_tag "{$samtools_tar}" \
+    load_and_tag "$samtools_tar" \
         "quay.io/ucsc_cgl/samtools:1.3--256539928ea162949d8a65ca5c79a72ef557ce7c"
     
-    load_and_tag "{$rsem_postprocess_tar}" \
+    load_and_tag "$rsem_postprocess_tar" \
         "jvivian/rsem_postprocess"   
 }
 
