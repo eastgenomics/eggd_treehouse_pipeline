@@ -107,7 +107,7 @@ SAMPLE/QC/STAR/SJ.out.tab
 | Memory | 50 GB |
 | Storage | 200 GB (100 GB references + 100 GB per sample) |
 
-The app defaults to `mem1_ssd1_v2_x16` in `aws:eu-central-1`. Adjust `instanceType` in `dxapp.json` to match your project's region and data size.
+The app defaults to `mem2_ssd1_v2_x16` in `aws:eu-central-1`. Adjust `instanceType` in `dxapp.json` to match your project's region and data size.
 
 Expected runtime: ~8–10 hours for expression + ~1–2 hours for QC on a typical RNA-seq sample.
 
