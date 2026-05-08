@@ -46,6 +46,34 @@ extract_pipeline() {
     cd "${REPO_DIR}" || exit 1
 }
 
+load_docker_images(){
+    # Load docker images for rnaseq-cgl-pipeline and umend_qc available
+    echo ">>> Running: Load docker images"
+
+    mkdir -p docker_images
+    docker load -i /home/dnanexus/in/docker_images/0/*.tar.gz
+    
+
+    docker images
+    
+    #Replace the docker image in the Makefile
+    ##rnaseq
+    OLD_rnaseq="quay.io/ucsc_cgl/rnaseq-cgl-pipeline@sha256:785eee9f750ab91078d84d1ee779b6f74717eafc09e49da817af6b87619b0756"
+    NEW_rnaseq=$(docker images --format="{{.ID}}")
+
+    echo $NEW_rnaseq
+
+    sed -i "s#$OLD_rnaseq#$NEW_rnaseq#g" Makefile
+
+    ##umendqc
+    docker load -i /home/dnanexus/in/docker_images/1/*.tar.gz
+    OLD_umend="ucsctreehouse/bam-umend-qc@sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f"
+    NEW_umend=$(docker images --format="{{.ID}}")
+
+    sed -i "s#$OLD_umend#$NEW_umend#g" Makefile
+
+    echo Makefile
+}
 
 stage_fastqs() {
     # Downloads all R1 and R2 FASTQ files (one or more per read, e.g. one
@@ -115,34 +143,6 @@ stage_references() {
     echo ">>> All expected reference files present."
 }
 
-load_docker_images(){
-    # Load docker images for rnaseq-cgl-pipeline and umend_qc available
-    echo ">>> Running: Load docker images"
-
-    mkdir -p docker_images
-    docker load -i /home/dnanexus/in/docker_images/0/*.tar.gz
-    
-
-    docker images
-    
-    #Replace the docker image in the Makefile
-    ##rnaseq
-    OLD_rnaseq="quay.io/ucsc_cgl/rnaseq-cgl-pipeline@sha256:785eee9f750ab91078d84d1ee779b6f74717eafc09e49da817af6b87619b0756"
-    NEW_rnaseq=$(docker images --format="{{.ID}}")
-
-    echo $NEW_rnaseq
-
-    sed -i "s#$OLD_rnaseq#$NEW_rnaseq#g" Makefile
-
-    ##umendqc
-    docker load -i /home/dnanexus/in/docker_images/1/*.tar.gz
-    OLD_umend="ucsctreehouse/bam-umend-qc@sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f"
-    NEW_umend=$(docker images --format="{{.ID}}")
-
-    sed -i "s#$OLD_umend#$NEW_umend#g" Makefile
-
-    echo Makefile
-}
 
 run_pipelines() {
     # Runs the Treehouse expression pipeline followed by the QC pipeline.
@@ -192,11 +192,10 @@ main() {
 
     dx-download-all-inputs # download inputs from json
     downgrade_docker
-    load_docker_images
     extract_pipeline
+    load_docker_images
     stage_fastqs
     stage_references
-    load_docker_images
     run_pipelines
     upload_outputs
 
