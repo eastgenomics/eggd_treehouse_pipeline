@@ -225,35 +225,17 @@ run_pipelines() {
 
 
 upload_outputs() {
-    # Uploads all files from outputs/expression/ and outputs/qc/ back to
-    # DNAnexus and sets the job output arrays.
-    echo ">>> Uploading expression outputs..."
-    expression_output=()
-    while IFS= read -r -d '' f; do
-        echo "    Uploading: ${f}"
-        file_id=$(dx upload "${f}" --brief)
-        expression_output+=("${file_id}")
-    done < <(find outputs/expression -type f -print0)
+    # Stage and upload expression and QC outputs to DNAnexus
+    echo ">>> Staging expression outputs..."
+    mkdir -p /home/dnanexus/out/expression_output
+    mv outputs/expression/* /home/dnanexus/out/expression_output/
 
-    echo ">>> Uploading QC outputs..."
-    qc_output=()
-    while IFS= read -r -d '' f; do
-        echo "    Uploading: ${f}"
-        file_id=$(dx upload "${f}" --brief)
-        qc_output+=("${file_id}")
-    done < <(find outputs/qc -type f -print0)
+    echo ">>> Staging QC outputs..."
+    mkdir -p /home/dnanexus/out/qc_output
+    mv outputs/qc/* /home/dnanexus/out/qc_output/
 
-    for file_id in "${expression_output[@]}"; do
-    dx-jobutil-add-output expression_output --array --class=file "${file_id}"
-    done
-
-    for file_id in "${qc_output[@]}"; do
-    dx-jobutil-add-output qc_output --array --class=file "${file_id}"
-    done
-
-    echo ">>> Upload complete."
-    echo "    Expression files uploaded: ${#expression_output[@]}"
-    echo "    QC files uploaded:         ${#qc_output[@]}"
+    echo ">>> Uploading all outputs..."
+    dx-upload-all-outputs --parallel
 }
 
 
