@@ -68,11 +68,13 @@ load_docker_images(){
     ##umendqc
     docker load -i /home/dnanexus/in/docker_images/1/*.tar.gz
     OLD_umend="ucsctreehouse/bam-umend-qc@sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f"
-    NEW_umend=$(docker images --format="{{.ID}}")
-
+    NEW_umend=$(docker images --format="{{.ID}}" | grep -w -v "$NEW_rnaseq")
+    
+    echo $NEW_umend
+    
     sed -i "s#$OLD_umend#$NEW_umend#g" Makefile
 
-    echo Makefile
+    grep -E "$NEW_rnaseq|$NEW_umend" Makefile
 }
 
 stage_fastqs() {
