@@ -46,8 +46,8 @@ extract_pipeline() {
     cd "${REPO_DIR}" || exit 1
 }
 
-load_docker_images(){
-    # Load docker images for rnaseq-cgl-pipeline and umend_qc available
+load_and_replace_docker_images(){
+    # Load docker images and replace the name in the Makefile for rnaseq-cgl-pipeline and umend_qc available
     echo ">>> Running: Load docker images"
 
     mkdir -p docker_images
@@ -75,6 +75,55 @@ load_docker_images(){
     sed -i "s#$OLD_umend#$NEW_umend#g" Makefile
 
     grep -E "$NEW_rnaseq|$NEW_umend" Makefile
+}
+
+load_and_tag() {
+    # Load a docker image and re-tag it with its full original name,
+    # so it is found locally when called by the rnaseq-cgl-pipeline container.
+    #
+    # Usage: load_and_tag <tar_path> <full_image_name>
+    #
+    # Arguments:
+    #   tar_path        : path to the .tar.gz docker image file
+    #   full_image_name : the full original name to tag it with
+    #                     (e.g. "quay.io/ucsc_cgl/kallisto:0.42.4--35ac87df...")
+
+    local tar_path="$1"
+    local full_image_name="$2"
+
+    echo ">>> Loading: ${tar_path}"
+    local image_id
+    image_id=$(docker load -i "${tar_path}" | grep -oP 'sha256:\S+|[a-f0-9]{12,}' | tail -1)
+
+    echo ">>> Tagging image ${image_id} as ${full_image_name}"
+    docker tag "${image_id}" "${full_image_name}"
+
+    echo ">>> Verified:"
+    docker images | grep "${full_image_name%%:*}"
+}
+
+run_load_and_tag_docker(){
+    # These are called internally by rnaseq-cgl-pipeline at runtime —
+    # must be tagged with their exact original name so Docker finds them locally
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/2/cutadapt*.tar.gz" \
+        "quay.io/ucsc_cgl/cutadapt:1.9--6bd44edd2b8f8f17e25c5a268fedaab65fa851d2"
+
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/3/kallisto*.tar.gz" \
+        "quay.io/ucsc_cgl/kallisto:0.42.4--35ac87df5b21a8e8e8d159f26864ac1e1db8cf86"
+
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/4/star*.tar.gz" \
+        "quay.io/ucsc_cgl/star:2.4.2a--bcbd5122b69ff6ac4ef61958e47bde94001cfe80"
+
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/5/rsem*.tar.gz" \
+        "quay.io/ucsc_cgl/rsem:1.2.25--d4275175cc8df36967db460b06337a14f40d2f21"
+
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/6/fastqc*.tar.gz" \
+        "quay.io/ucsc_cgl/fastqc:0.11.5--be13567d00cd4c586edf8ae47d991815c8c72a49"
 }
 
 stage_fastqs() {
@@ -195,7 +244,8 @@ main() {
     dx-download-all-inputs # download inputs from json
     downgrade_docker
     extract_pipeline
-    load_docker_images
+    load_and_replace_docker_images
+    run_load_and_tag_docker
     stage_fastqs
     stage_references
     run_pipelines
