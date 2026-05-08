@@ -108,8 +108,6 @@ run_load_and_tag_docker(){
     # Resolve glob paths first
     local rnaseq_tar umend_tar cutadapt_tar kallisto_tar star_tar rsem_tar fastqc_tar
 
-    rnaseq_tar=$(ls /home/dnanexus/in/docker_images/*/rnaseq*.tar.gz)
-    umend_tar=$(ls /home/dnanexus/in/docker_images/*/bam-umend*.tar.gz)
     cutadapt_tar=$(ls /home/dnanexus/in/docker_images/*/cutadapt*.tar.gz)
     kallisto_tar=$(ls /home/dnanexus/in/docker_images/*/kallisto*.tar.gz)
     star_tar=$(ls /home/dnanexus/in/docker_images/*/star*.tar.gz)
