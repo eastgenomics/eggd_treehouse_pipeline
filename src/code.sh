@@ -170,10 +170,10 @@ stage_fastqs() {
     # Merge lanes by concatenation into samples/
     # cat is safe for .gz: gzip supports multi-stream files
     echo ">>> Merging R1 lanes -> samples/${sample_name}_R1_merged.fastq.gz"
-    cat /home/dnanexus/in/fastq_R1/* > "samples/${sample_name}_R1_merged.fastq.gz"
+    cat /home/dnanexus/in/fastq_R1/*/* > "samples/${sample_name}_R1_merged.fastq.gz"
 
     echo ">>> Merging R2 lanes -> samples/${sample_name}_R2_merged.fastq.gz"
-    cat /home/dnanexus/in/fastq_R2/* > "samples/${sample_name}_R2_merged.fastq.gz"
+    cat /home/dnanexus/in/fastq_R2/*/* > "samples/${sample_name}_R2_merged.fastq.gz"
     
     rm samples/TEST.bam samples/TEST_R1.fastq.gz samples/TEST_R2.fastq.gz #remove already present files
     echo ">>> samples/ contents:"
