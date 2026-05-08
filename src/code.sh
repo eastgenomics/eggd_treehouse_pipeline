@@ -106,24 +106,36 @@ run_load_and_tag_docker(){
     # These are called internally by rnaseq-cgl-pipeline at runtime —
     # must be tagged with their exact original name so Docker finds them locally
     load_and_tag \
-        "/home/dnanexus/in/docker_images/2/cutadapt*.tar.gz" \
+        "/home/dnanexus/in/docker_images/*/cutadapt*.tar.gz" \
         "quay.io/ucsc_cgl/cutadapt:1.9--6bd44edd2b8f8f17e25c5a268fedaab65fa851d2"
 
     load_and_tag \
-        "/home/dnanexus/in/docker_images/3/kallisto*.tar.gz" \
+        "/home/dnanexus/in/docker_images/*/kallisto*.tar.gz" \
         "quay.io/ucsc_cgl/kallisto:0.42.4--35ac87df5b21a8e8e8d159f26864ac1e1db8cf86"
 
     load_and_tag \
-        "/home/dnanexus/in/docker_images/4/star*.tar.gz" \
+        "/home/dnanexus/in/docker_images/*/star*.tar.gz" \
         "quay.io/ucsc_cgl/star:2.4.2a--bcbd5122b69ff6ac4ef61958e47bde94001cfe80"
 
     load_and_tag \
-        "/home/dnanexus/in/docker_images/5/rsem*.tar.gz" \
+        "/home/dnanexus/in/docker_images/*/rsem*.tar.gz" \
         "quay.io/ucsc_cgl/rsem:1.2.25--d4275175cc8df36967db460b06337a14f40d2f21"
 
     load_and_tag \
-        "/home/dnanexus/in/docker_images/6/fastqc*.tar.gz" \
+        "/home/dnanexus/in/docker_images/*/fastqc*.tar.gz" \
         "quay.io/ucsc_cgl/fastqc:0.11.5--be13567d00cd4c586edf8ae47d991815c8c72a49"
+
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/*/gencode_hugo_mapping*.tar.gz" \
+        "quay.io/ucsc_cgl/gencode_hugo_mapping:1.0--cb4865d02f9199462e66410f515c4dabbd061e4d"
+    
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/*/samtools*.tar.gz" \
+        "quay.io/ucsc_cgl/samtools:1.3--256539928ea162949d8a65ca5c79a72ef557ce7c"
+    
+    load_and_tag \
+        "/home/dnanexus/in/docker_images/*/rsem_postprocess*.tar.gz" \
+        "jvivian/rsem_postprocess"   
 }
 
 stage_fastqs() {
