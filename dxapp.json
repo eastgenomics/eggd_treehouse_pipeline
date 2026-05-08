@@ -15,7 +15,7 @@
       "name": "fastq_R1",
       "label": "FASTQ R1 file",
       "help": "Gzipped FASTQ file for read 1 of the sample. Filename must contain _R1, _R1_001, or _1 before the extension so the Treehouse Makefile can detect it.",
-      "class": "file",
+      "class": "array:file",
       "patterns": ["*.fastq.gz", "*.fq.gz"],
       "optional": false
     },
@@ -23,7 +23,7 @@
       "name": "fastq_R2",
       "label": "FASTQ R2 file",
       "help": "Gzipped FASTQ file for read 2 of the sample. Filename must contain _R2, _R2_001, or _2 before the extension so the Treehouse Makefile can detect it.",
-      "class": "file",
+      "class": "array:file",
       "patterns": ["*.fastq.gz", "*.fq.gz"],
       "optional": false
     },
