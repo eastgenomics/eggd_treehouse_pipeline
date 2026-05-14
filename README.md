@@ -62,15 +62,17 @@ Update the `project` and `path` values in the `reference_files` suggestion block
 
 2. **Repository clone** – The Treehouse pipelines repo is cloned from GitHub into the worker's working directory.
 
-3. **FASTQ staging and lane merging** – All R1 files are downloaded into a staging directory and concatenated into `samples/SAMPLE_R1_merged.fastq.gz`; the same is done for all R2 files. If only one file per read is supplied, the merge step is a simple copy. The merged filenames contain `_R1_` and `_R2_` so the Treehouse Makefile's regex detection picks them up correctly.
+3. **Load and replace docker images** – All the docker images are upaloaded and re-tag to the correct name so that Docker finds them.
 
-4. **Reference staging** -- All files in the `reference_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing.
+4. **FASTQ staging and lane merging** – All R1 files are downloaded into a staging directory and concatenated into `samples/SAMPLE_R1_merged.fastq.gz`; the same is done for all R2 files. If only one file per read is supplied, the merge step is a simple copy. The merged filenames contain `_R1_` and `_R2_` so the Treehouse Makefile's regex detection picks them up correctly.
 
-5. **`make expression`** – Runs `quay.io/ucsc_cgl/rnaseq-cgl-pipeline` (v3.3.4-1.12.3) via Docker, using the staged STAR, RSEM, and Kallisto references. Outputs land in `outputs/expression/`.
+5. **Reference staging** – All files in the `reference_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing.
 
-6. **`make qc`** – Runs `ucsctreehouse/bam-umend-qc` (v1.1.1) on the sorted BAM produced by the expression step. Outputs land in `outputs/qc/`.
+6. **`make expression`** – Runs `quay.io/ucsc_cgl/rnaseq-cgl-pipeline` (v3.3.4-1.12.3) via Docker, using the staged STAR, RSEM, and Kallisto references. Outputs land in `outputs/expression/`.
 
-7. **Output upload** – All files under `outputs/expression/` and `outputs/qc/` are uploaded to DNAnexus and returned as the job's output arrays.
+7. **`make qc`** – Runs `ucsctreehouse/bam-umend-qc` (v1.1.1) on the sorted BAM produced by the expression step. Outputs land in `outputs/qc/`.
+
+8. **Output upload** – All files under `outputs/expression/` and `outputs/qc/` are uploaded to DNAnexus and returned as the job's output arrays.
 
 ---
 
@@ -103,11 +105,11 @@ SAMPLE/QC/STAR/SJ.out.tab
 
 | Resource | Minimum |
 |---|---|
-| Cores | 16 |
-| Memory | 50 GB |
-| Storage | 200 GB (100 GB references + 100 GB per sample) |
+| Cores | 16+ |
+| Memory | 50 GB+ |
+| Storage | 200 GB+ (100 GB+ references + 100 GB+ per sample) |
 
-The app defaults to `mem2_ssd1_v2_x16` in `aws:eu-central-1`. Adjust `instanceType` in `dxapp.json` to match your project's region and data size.
+The app defaults to `mem2_ssd1_v2_x16` in `aws:eu-central-1`.
 
 Expected runtime: ~8–10 hours for expression + ~1–2 hours for QC on a typical RNA-seq sample.
 
@@ -117,10 +119,19 @@ Expected runtime: ~8–10 hours for expression + ~1–2 hours for QC on a typica
 
 | Tool | Version / Image digest |
 |---|---|
-| rnaseq-cgl-pipeline | `3.3.4-1.12.3` – `sha256:785eee9f…` |
-| bam-umend-qc | `1.1.1` – `sha256:5f286d72…` |
+| treehouse-pipeline | https://github.com/UCSC-Treehouse/pipelines
+| rnaseq-cgl-pipeline | `3.3.4-1.12.3` – `sha256:785eee9f750ab91078d84d1ee779b6f74717eafc09e49da817af6b87619b0756` |
+| bam-umend-qc | `1.1.1` – `sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f` |
+| cutadapt | `1.9` - `6bd44edd2b8f8f17e25c5a268fedaab65fa851d2` |
+| star | `2.4.2a` - `bcbd5122b69ff6ac4ef61958e47bde94001cfe80` |
+| rsem | `1.2.25` - `d4275175cc8df36967db460b06337a14f40d2f21` |
+| gencode_hugo_mapping | `1.0` - `cb4865d02f9199462e66410f515c4dabbd061e4d` |
+| samtools | `1.3` - `256539928ea162949d8a65ca5c79a72ef557ce7c` |
+| fastqc | `0.11.5` - `be13567d00cd4c586edf8ae47d991815c8c72a49` |
+| kallisto | `0.43.1` - `355c19b1fb6fbb85f7f8293e95fb8a1e9d0da163` |
+| rsem | `rsem_postprocess` |
 
 ---
 
 ## This app was made by East GLH
-[Claude AI](https://platform.claude.com/) was used to assemble the code.
+Disclaimer: [Claude AI](https://platform.claude.com/) was used to assemble the code.
