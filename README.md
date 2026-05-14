@@ -18,7 +18,7 @@ from the [UCSC-Treehouse/pipelines](https://github.com/UCSC-Treehouse/pipelines)
 |---|---|---|
 | `fastq_R1` | array:file | One or more gzipped FASTQ files for read 1 (e.g. one per sequencing lane). Multiple files are concatenated in the order supplied before being passed to the pipeline. |
 | `fastq_R2` | array:file | One or more gzipped FASTQ files for read 2 (e.g. one per sequencing lane). Multiple files are concatenated in the order supplied before being passed to the pipeline. |
-| `reference_files` | array:file | The three reference files required by the Treehouse pipeline (see below). A project-level suggestion path is provided in the app so these can be selected from a shared reference folder. |
+| `references_files` | array:file | The three reference files required by the Treehouse pipeline (see below). A project-level suggestion path is provided in the app so these can be selected from a shared reference folder. |
 | `github_repo` | file | Tar.gz file of the GitHub repository to use the Treehouse pipeline. |
 | `docker_packages` | array:file | Docker packages to install docker version 19.03.x. |
 | `docker_images` | array:file | Docker images for required genomic tools (see [here](https://github.com/BD2KGenomics/toil-rnaseq/blob/master/docker/README.md#genomic-tool-containers) and [here](https://github.com/UCSC-Treehouse/pipelines/blob/master/CGL_TOIL_RNA-Seq_Pipeline_versions.md)). |
@@ -36,7 +36,7 @@ Concatenation of `.gz` files with `cat` is valid - the gzip format supports mult
 
 ### Reference files
 
-The `reference_files` array must contain exactly these three files, uploaded to DNAnexus with these **exact filenames**:
+The `references_files` array must contain exactly these three files, uploaded to DNAnexus with these **exact filenames**:
 
 ```
 starIndex_hg38_no_alt.tar.gz
@@ -52,7 +52,7 @@ http://hgdownload.soe.ucsc.edu/treehouse/reference/rsem_ref_hg38_no_alt.tar.gz
 http://hgdownload.soe.ucsc.edu/treehouse/reference/kallisto_hg38.idx
 ```
 
-Update the `project` and `path` values in the `reference_files` suggestion block in `dxapp.json` to point to that shared folder so they are pre-selected in the DNAnexus UI.
+Update the `project` and `path` values in the `references_files` suggestion block in `dxapp.json` to point to that shared folder so they are pre-selected in the DNAnexus UI.
 
 ---
 
@@ -60,7 +60,7 @@ Update the `project` and `path` values in the `reference_files` suggestion block
 
 1. **Docker downgrade** – `docker_downgrade_19_03.sh` (bundled under `resources/home/dnanexus/`, deployed automatically to `~/` on the worker) is executed with `sudo`. This replaces the default DNAnexus worker Docker with version 19.03, which is required for the legacy Treehouse pipeline images. See [GitHub issue](https://github.com/UCSC-Treehouse/pipelines/issues/42).
 
-2. **Repository clone** – The Treehouse pipelines repo is cloned from GitHub into the worker's working directory.
+2. **Repository clone** – The Treehouse GitHub pipelines repo is extracted from the tarball github_repo input parameter.
 
 3. **Load and replace docker images** – All the docker images are upaloaded and re-tag to the correct name so that Docker finds them.
 
