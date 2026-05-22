@@ -58,21 +58,19 @@ Update the `project` and `path` values in the `references_files` suggestion bloc
 
 ## How does this app work?
 
-1. **Docker downgrade** – `docker_downgrade_19_03.sh` (bundled under `resources/home/dnanexus/`, deployed automatically to `~/` on the worker) is executed with `sudo`. This replaces the default DNAnexus worker Docker with version 19.03, which is required for the legacy Treehouse pipeline images. See [GitHub issue](https://github.com/UCSC-Treehouse/pipelines/issues/42).
+1. **Repository clone** – The Treehouse GitHub pipelines repo is extracted from the tarball github_repo input parameter.
 
-2. **Repository clone** – The Treehouse GitHub pipelines repo is extracted from the tarball github_repo input parameter.
+2. **Load and replace docker images** – All the docker images are upaloaded and re-tag to the correct name so that Docker finds them.
 
-3. **Load and replace docker images** – All the docker images are upaloaded and re-tag to the correct name so that Docker finds them.
+3. **FASTQ staging and lane merging** – All R1 files are downloaded into a staging directory and concatenated into `samples/SAMPLE_R1_merged.fastq.gz`; the same is done for all R2 files. If only one file per read is supplied, the merge step is a simple copy. The merged filenames contain `_R1_` and `_R2_` so the Treehouse Makefile's regex detection picks them up correctly.
 
-4. **FASTQ staging and lane merging** – All R1 files are downloaded into a staging directory and concatenated into `samples/SAMPLE_R1_merged.fastq.gz`; the same is done for all R2 files. If only one file per read is supplied, the merge step is a simple copy. The merged filenames contain `_R1_` and `_R2_` so the Treehouse Makefile's regex detection picks them up correctly.
+4. **Reference staging** – All files in the `reference_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing.
 
-5. **Reference staging** – All files in the `reference_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing.
+5. **`make expression`** – Runs `quay.io/ucsc_cgl/rnaseq-cgl-pipeline` (v3.3.4-1.12.3) via Docker, using the staged STAR, RSEM, and Kallisto references. Outputs land in `outputs/expression/`.
 
-6. **`make expression`** – Runs `quay.io/ucsc_cgl/rnaseq-cgl-pipeline` (v3.3.4-1.12.3) via Docker, using the staged STAR, RSEM, and Kallisto references. Outputs land in `outputs/expression/`.
+6. **`make qc`** – Runs `ucsctreehouse/bam-umend-qc` (v1.1.1) on the sorted BAM produced by the expression step. Outputs land in `outputs/qc/`.
 
-7. **`make qc`** – Runs `ucsctreehouse/bam-umend-qc` (v1.1.1) on the sorted BAM produced by the expression step. Outputs land in `outputs/qc/`.
-
-8. **Output upload** – All files under `outputs/expression/` and `outputs/qc/` are uploaded to DNAnexus and returned as the job's output arrays.
+7. **Output upload** – All files under `outputs/expression/` and `outputs/qc/` are uploaded to DNAnexus and returned as the job's output arrays.
 
 ---
 
@@ -116,6 +114,8 @@ Expected runtime: ~8–10 hours for expression + ~1–2 hours for QC on a typica
 ---
 
 ## Pipeline versions used
+The following docker images were repackaged to update them with manifest v2.
+Script used for the repackage in resources/home/dnanexus/repackage_docker_images.sh
 
 | Tool | Version / Image digest |
 |---|---|
