@@ -79,15 +79,25 @@ load_and_tag() {
     full_image_name="$2"
 
     echo ">>> Loading: $tar_path"
-    docker load -i "$tar_path"
-    docker images
+    loaded_ref=$(docker load -i "$tar_path" | cut -d " " -f 3)
+    if [[ "$loaded_ref" != "$full_image_name" ]]; then
+        echo ">>> Re-tagging $loaded_ref -> $full_image_name"
+        docker tag "$loaded_ref" "$full_image_name"
+    fi
+
+    echo ">>> Verifying image $full_image_name is present:"
+    if ! docker images --format="{{.Repository}}:{{.Tag}}" | grep -qF "$full_image_name"; then
+        echo "ERROR: Expected image '$full_image_name' not found after loading $tar_path"
+        exit 1
+    fi
+    echo ">>> OK: $full_image_name"
 }
 
 run_load_and_tag_docker(){
     # These are called internally by rnaseq-cgl-pipeline at runtime —
     # must be tagged with their exact original name so Docker finds them locally
     # Resolve glob paths first
-    local cutadapt_tar kallisto_tar star_tar rsem_tar fastqc_tar
+    local rnaseq_tar umend_tar cutadapt_tar kallisto_tar star_tar rsem_tar fastqc_tar
 
     cutadapt_tar=$(ls /home/dnanexus/in/docker_images/*/cutadapt*.tar.gz)
     kallisto_tar=$(ls /home/dnanexus/in/docker_images/*/kallisto*.tar.gz)
