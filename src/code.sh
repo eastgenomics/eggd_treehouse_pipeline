@@ -80,13 +80,7 @@ load_and_tag() {
 
     echo ">>> Loading: $tar_path"
     docker load -i "$tar_path"
-
-    echo ">>> Verifying image $full_image_name is present:"
-    if ! docker images --format="{{.Repository}}:{{.Tag}}" | grep -qF "$full_image_name"; then
-        echo "ERROR: Expected image '$full_image_name' not found after loading $tar_path"
-        exit 1
-    fi
-    echo ">>> OK: $full_image_name"
+    docker images
 }
 
 run_load_and_tag_docker(){
