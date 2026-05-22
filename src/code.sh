@@ -97,7 +97,7 @@ run_load_and_tag_docker(){
     # These are called internally by rnaseq-cgl-pipeline at runtime —
     # must be tagged with their exact original name so Docker finds them locally
     # Resolve glob paths first
-    local rnaseq_tar umend_tar cutadapt_tar kallisto_tar star_tar rsem_tar fastqc_tar
+    local cutadapt_tar kallisto_tar star_tar rsem_tar fastqc_tar
 
     cutadapt_tar=$(ls /home/dnanexus/in/docker_images/*/cutadapt*.tar.gz)
     kallisto_tar=$(ls /home/dnanexus/in/docker_images/*/kallisto*.tar.gz)
