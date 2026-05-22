@@ -9,21 +9,6 @@ export TZ=Europe/London
 # -e = exit on error; -x = output each line that is executed to log; -o pipefail = throw an error if there's an error in pipeline
 set -e -x -o pipefail
 
-downgrade_docker() {
-    # Downgrades Docker to v19.03 using the script bundled under
-    # resources/home/dnanexus/, which DNAnexus deploys automatically to ~/
-    echo ">>> Downgrading Docker to version 19.03..."
-    sudo bash ~/docker_downgrade_19_03.sh
-    echo ">>> Docker version after downgrade: $(docker --version)"
-    local version
-    version=$(docker --version| grep -o "19.03")
-    
-    if [[ "${version}" != "19.03" ]]; then
-        echo "ERROR: Docker version is not 19.03"
-        exit 1
-    fi
-}
-
 extract_pipeline() {
     # Clones the UCSC Treehouse pipelines repository and moves into it.
     # All subsequent steps assume the working directory is pipelines/
@@ -252,7 +237,6 @@ main() {
     echo "=========================================="
 
     dx-download-all-inputs # download inputs from json
-    downgrade_docker
     extract_pipeline
     load_and_replace_docker_images
     run_load_and_tag_docker
