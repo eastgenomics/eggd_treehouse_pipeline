@@ -31,7 +31,7 @@ from the [UCSC-Treehouse/pipelines](https://github.com/UCSC-Treehouse/pipelines)
 
 3. **FASTQ staging and lane merging** – All R1 files are downloaded into a staging directory and concatenated into `samples/SAMPLE_R1_merged.fastq.gz`; the same is done for all R2 files. If only one file per read is supplied, the merge step is a simple copy. The merged filenames contain `_R1_` and `_R2_` so the Treehouse Makefile's regex detection picks them up correctly.
 
-4. **Reference staging** – All files in the `reference_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing. Reference files were downloaded from the UCSC Treehouse reference server:
+4. **Reference staging** – All files in the `references_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing. Reference files were downloaded from the UCSC Treehouse reference server:
 
 ```
 http://hgdownload.soe.ucsc.edu/treehouse/reference/starIndex_hg38_no_alt.tar.gz
