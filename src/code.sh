@@ -95,7 +95,8 @@ load_and_tag() {
 
 run_load_and_tag_docker(){
     # These are called internally by rnaseq-cgl-pipeline at runtime —
-    # must be tagged with their exact original name so Docker finds them locally
+    # must be tagged with their exact original name so Docker finds them locally.
+    # Each original name is hard-coded.
     # Resolve glob paths first
     local cutadapt_tar kallisto_tar star_tar rsem_tar fastqc_tar
 
@@ -185,7 +186,7 @@ stage_references() {
     echo ">>> references/ contents:"
     ls -lh references/
 
-    # Validate that the expected filenames are present
+    # Validate that the expected filenames are present.
     local expected=("starIndex_hg38_no_alt.tar.gz" "rsem_ref_hg38_no_alt.tar.gz" "kallisto_hg38.idx")
     for f in "${expected[@]}"; do
         if [[ ! -f "references/${f}" ]]; then
@@ -214,7 +215,8 @@ run_pipelines() {
 
 
 upload_outputs() {
-    # Stage and upload expression and QC outputs to DNAnexus
+    # Stage and upload expression and QC outputs to DNAnexus.
+    # The expression/*.tar.gz is extracted and its files are uploaded in DNAnexus, while the *.tar.gz is then removed.
     echo ">>> Staging expression outputs..."
     mkdir -p /home/dnanexus/out/expression_output
     
@@ -234,14 +236,15 @@ upload_outputs() {
 
 
 main() {
+    # Run the main pipeline with the function in order
 
     echo "=========================================="
     echo " eggd_treehouse_pipeline v1.0.0"
     echo " UCSC Treehouse expression + QC pipelines"
     echo "=========================================="
 
-    dx-download-all-inputs # download inputs from json
-    extract_pipeline
+    dx-download-all-inputs
+    extract_pipeline # from now on, the functions will run inside the pipeline/ folder
     load_and_replace_docker_images
     run_load_and_tag_docker
     stage_fastqs
