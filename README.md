@@ -8,7 +8,7 @@ Runs the [UCSC Treehouse](https://treehouse.soe.ucsc.edu/) RNA-seq expression an
 make expression qc
 ```
 
-from the [UCSC-Treehouse/pipelines](https://github.com/UCSC-Treehouse/pipelines) repository, producing gene/isoform expression quantification (via STAR + RSEM + Kallisto) and QC metrics (via bam-umend-qc).
+from the [UCSC-Treehouse/pipelines](https://github.com/UCSC-Treehouse/pipelines) repository, producing gene/isoform expression quantification (via STAR + RSEM/Kallisto) and QC metrics (via bam-umend-qc).
 
 ---
 
@@ -18,40 +18,10 @@ from the [UCSC-Treehouse/pipelines](https://github.com/UCSC-Treehouse/pipelines)
 |---|---|---|
 | `fastq_R1` | array:file | One or more gzipped FASTQ files for read 1 (e.g. one per sequencing lane). Multiple files are concatenated in the order supplied before being passed to the pipeline. |
 | `fastq_R2` | array:file | One or more gzipped FASTQ files for read 2 (e.g. one per sequencing lane). Multiple files are concatenated in the order supplied before being passed to the pipeline. |
-| `references_files` | array:file | The three reference files required by the Treehouse pipeline (see below). A project-level suggestion path is provided in the app so these can be selected from a shared reference folder. |
+| `references_files` | array:file | The three reference files required by the Treehouse pipeline (see below). |
 | `github_repo` | file | Tar.gz file of the GitHub repository to use the Treehouse pipeline. |
 | `docker_images` | array:file | Docker images for required genomic tools (see [here](https://github.com/BD2KGenomics/toil-rnaseq/blob/master/docker/README.md#genomic-tool-containers) and [here](https://github.com/UCSC-Treehouse/pipelines/blob/master/CGL_TOIL_RNA-Seq_Pipeline_versions.md)). |
 
-### Multi-lane FASTQ handling
-
-When a sample is split across multiple sequencing lanes, supply all R1 files as the `fastq_R1` array and all R2 files as the `fastq_R2` array. The app will download each file and concatenate them into a single merged FASTQ per read before running the pipeline:
-
-```
-samples/SAMPLE_R1_merged.fastq.gz   <- lane 1 R1 + lane 2 R1 + ...
-samples/SAMPLE_R2_merged.fastq.gz   <- lane 1 R2 + lane 2 R2 + ...
-```
-
-Concatenation of `.gz` files with `cat` is valid - the gzip format supports multi-stream files and all downstream tools (STAR, RSEM, Kallisto) handle them correctly. The sample name is inferred automatically from the first R1 filename by stripping lane (`_L001`) and read (`_R1`, `_1`) suffixes.
-
-### Reference files
-
-The `references_files` array must contain exactly these three files, uploaded to DNAnexus with these **exact filenames**:
-
-```
-starIndex_hg38_no_alt.tar.gz
-rsem_ref_hg38_no_alt.tar.gz
-kallisto_hg38.idx
-```
-
-The app validates that all three are present after download and will exit with a clear error message if any are missing. Reference files can be downloaded from the UCSC Treehouse reference server and uploaded once to a shared folder in your DNAnexus project:
-
-```
-http://hgdownload.soe.ucsc.edu/treehouse/reference/starIndex_hg38_no_alt.tar.gz
-http://hgdownload.soe.ucsc.edu/treehouse/reference/rsem_ref_hg38_no_alt.tar.gz
-http://hgdownload.soe.ucsc.edu/treehouse/reference/kallisto_hg38.idx
-```
-
----
 
 ## How does this app work?
 
@@ -61,7 +31,13 @@ http://hgdownload.soe.ucsc.edu/treehouse/reference/kallisto_hg38.idx
 
 3. **FASTQ staging and lane merging** – All R1 files are downloaded into a staging directory and concatenated into `samples/SAMPLE_R1_merged.fastq.gz`; the same is done for all R2 files. If only one file per read is supplied, the merge step is a simple copy. The merged filenames contain `_R1_` and `_R2_` so the Treehouse Makefile's regex detection picks them up correctly.
 
-4. **Reference staging** – All files in the `reference_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing.
+4. **Reference staging** – All files in the `reference_files` array are downloaded into `pipelines/references/` preserving their original filenames. The app then validates that the three expected filenames are present before proceeding, exiting with a clear error if any are missing. Reference files were downloaded from the UCSC Treehouse reference server:
+
+```
+http://hgdownload.soe.ucsc.edu/treehouse/reference/starIndex_hg38_no_alt.tar.gz
+http://hgdownload.soe.ucsc.edu/treehouse/reference/rsem_ref_hg38_no_alt.tar.gz
+http://hgdownload.soe.ucsc.edu/treehouse/reference/kallisto_hg38.idx
+```
 
 5. **`make expression`** – Runs `quay.io/ucsc_cgl/rnaseq-cgl-pipeline` (v3.3.4-1.12.3) via Docker, using the staged STAR, RSEM, and Kallisto references. Outputs land in `outputs/expression/`.
 
@@ -95,6 +71,18 @@ SAMPLE/QC/STAR/SJ.out.tab
 ```
 
 ---
+
+## How to run this app from command line ?
+dx run app-<app-ID> \
+    -ifastq_R1=file-<file_ID> \
+    -ifastq_R2=file-<file_ID> \
+    -ireferences_files=file-<file_ID> \
+    -ireferences_files=file-<file_ID> \
+    -ireferences_files=file-<file_ID> \
+    --destination project-<project_ID>:/<fodler_name_of_interest>/ \
+    -y --watch --brief
+
+----
 
 ## Resource requirements
 
@@ -130,5 +118,16 @@ Script used for the repackage in resources/home/dnanexus/repackage_docker_images
 
 ---
 
+## Security Note
+The original [UCSC Treehouse](https://treehouse.soe.ucsc.edu/) reported a [vulnerability in the numpy version used (1.13.3)](https://github.com/advisories/GHSA-5545-2q6w-2gh6) in the docker of [mend_qc tool](https://github.com/UCSC-Treehouse/mend_qc).
+The authors reported that this is not expected to be a problem in the context of the mend_qc docker used by the pipeline. For more info: https://github.com/UCSC-Treehouse/pipelines#security-note.
+
+---
+
 ## This app was made by East GLH
 Disclaimer: [Claude AI](https://platform.claude.com/) was used to assemble the code.
+
+---
+
+## Awknowledgments
+We wish to awknowledge the author of the [UCSC Treehouse](https://treehouse.soe.ucsc.edu/) pipeline for the original tool and their support while building this app.
