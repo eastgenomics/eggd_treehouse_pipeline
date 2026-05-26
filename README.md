@@ -80,7 +80,7 @@ dx run app-<app-ID> \
     -ireferences_files=file-<file_ID> \
     -ireferences_files=file-<file_ID> \
     -ireferences_files=file-<file_ID> \
-    --destination project-<project_ID>:/<fodler_name_of_interest>/ \
+    --destination project-<project_ID>:/<folder_name_of_interest>/ \
     -y --watch --brief
 ```
 ----
@@ -130,5 +130,5 @@ Disclaimer: [Claude AI](https://platform.claude.com/) was used to assemble the c
 
 ---
 
-## Awknowledgments
-We wish to awknowledge the author of the [UCSC Treehouse](https://treehouse.soe.ucsc.edu/) pipeline for the original tool and their support while building this app.
+## Acknowledgements
+We wish to acknowledge the author of the [UCSC Treehouse](https://treehouse.soe.ucsc.edu/) pipeline for the original tool and their support while building this app.
