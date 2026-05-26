@@ -51,7 +51,7 @@ http://hgdownload.soe.ucsc.edu/treehouse/reference/kallisto_hg38.idx
 
 | Output | Class | Description |
 |---|---|---|
-| `expression_output` | array:file | All files from `outputs/expression/`, including the results tar.gz, sorted BAM, and pipeline logs. |
+| `expression_output` | array:file | All files from `outputs/expression/`, including the contents of results tar.gz, sorted BAM, and pipeline logs. |
 | `qc_output` | array:file | All files from `outputs/qc/`, including `bam_umend_qc.json`, `bam_umend_qc.tsv`, and `readDist.txt`. |
 
 ### Expression tar.gz contents
