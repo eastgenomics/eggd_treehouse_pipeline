@@ -73,6 +73,7 @@ SAMPLE/QC/STAR/SJ.out.tab
 ---
 
 ## How to run this app from command line ?
+```
 dx run app-<app-ID> \
     -ifastq_R1=file-<file_ID> \
     -ifastq_R2=file-<file_ID> \
@@ -81,7 +82,7 @@ dx run app-<app-ID> \
     -ireferences_files=file-<file_ID> \
     --destination project-<project_ID>:/<fodler_name_of_interest>/ \
     -y --watch --brief
-
+```
 ----
 
 ## Resource requirements
