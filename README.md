@@ -9,6 +9,7 @@ make expression qc
 ```
 
 from the [UCSC-Treehouse/pipelines](https://github.com/UCSC-Treehouse/pipelines) repository, producing gene/isoform expression quantification (via STAR + RSEM/Kallisto) and QC metrics (via bam-umend-qc).
+The app runs per sample.
 
 ---
 
