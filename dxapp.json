@@ -7,9 +7,6 @@
   "whatsNew": {
     "v1.0.0": "Initial release of the Treehouse expression and QC pipeline on DNAnexus"
   },
-  "properties": {
-    "githubRelease": "1.0.0"
-    },
   "inputSpec": [
     {
       "name": "fastq_R1",
