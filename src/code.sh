@@ -190,12 +190,21 @@ stage_references() {
     local expected=("starIndex_hg38_no_alt.tar.gz" "rsem_ref_hg38_no_alt.tar.gz" "kallisto_hg38.idx")
     for f in "${expected[@]}"; do
         if [[ ! -f "references/${f}" ]]; then
-            echo "ERROR: Expected reference file not found: references/${f}"
-            echo "       Please ensure the reference_files input contains files with these exact names:"
-            echo "         starIndex_hg38_no_alt.tar.gz"
-            echo "         rsem_ref_hg38_no_alt.tar.gz"
-            echo "         kallisto_hg38.idx"
-            exit 1
+            echo "Reference name is re-written to match expected file name"
+            if [[ "references/${f}" == *"starIndex"* ]]; then
+                mv references/starIndex* references/${f}
+            elif [[ "references/${f}" == *"rsem"* ]]; then
+                mv references/rsem* references/${f} 
+            elif [[ "references/${f}" == *"kallisto"* ]]; then
+                mv references/kallisto* references/${f}           
+            else
+                echo "ERROR: Expected reference file not found: references/${f}"
+                echo "       Please ensure the reference_files input are re-named to include:"
+                echo "       starIndex* for starIndex_hg38_no_alt.tar.gz"
+                echo "       rsem* for rsem_ref_hg38_no_alt.tar.gz"
+                echo "       kallisto* kallisto_hg38.idx"
+                exit 1
+            fi
         fi
     done
 
