@@ -16,7 +16,7 @@ extract_pipeline() {
 
     mkdir /home/dnanexus/repo_extract
 
-    tar xvzf ${github_repo_path##*/} -C /home/dnanexus/repo_extract
+    tar xvzf ${github_repo_path} -C /home/dnanexus/repo_extract
 
     REPO_DIR=$(find /home/dnanexus/repo_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)
 
@@ -44,7 +44,7 @@ load_and_replace_docker_images(){
     #Replace the docker image in the Makefile
     ##rnaseq
     OLD_rnaseq="quay.io/ucsc_cgl/rnaseq-cgl-pipeline@sha256:785eee9f750ab91078d84d1ee779b6f74717eafc09e49da817af6b87619b0756"
-    NEW_rnaseq=$(docker images --format="{{.ID}}")
+    NEW_rnaseq=$(docker images --format="{{.Repository}} {{.ID}}" | grep "rnaseq-cgl-pipeline" | cut -d' ' -f2)
 
     echo $NEW_rnaseq
 
@@ -53,7 +53,7 @@ load_and_replace_docker_images(){
     ##umendqc
     docker load -i /home/dnanexus/in/docker_images/1/*.tar.gz
     OLD_umend="ucsctreehouse/bam-umend-qc@sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f"
-    NEW_umend=$(docker images --format="{{.ID}}" | grep -w -v "$NEW_rnaseq")
+    NEW_umend=$(docker images --format="{{.Repository}} {{.ID}}" | grep "bam_umend_qc" | cut -d' ' -f2)
     
     echo $NEW_umend
     
