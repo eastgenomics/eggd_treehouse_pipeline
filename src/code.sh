@@ -69,11 +69,11 @@ load_and_tag() {
     # Usage: load_and_tag <tar_path> <full_image_name>
     #
     # Arguments:
-    #   tar_path        : path to the .tar.gz docker image file
-    #   full_image_name : the full original name to tag it with
+    # tar_path        : path to the .tar.gz docker image file
+    # full_image_name : the full original name to tag it with
     #                     (e.g. "quay.io/ucsc_cgl/kallisto:0.42.4--35ac87df...")
 
-        local tar_path
+    local tar_path
     local full_image_name
     tar_path="$1"
     full_image_name="$2"
