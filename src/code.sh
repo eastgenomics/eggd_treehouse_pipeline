@@ -36,13 +36,12 @@ load_and_replace_docker_images(){
     echo ">>> Running: Load docker images"
 
     mkdir -p docker_images
+    
+    ##rnaseq
     docker load -i /home/dnanexus/in/docker_images/0/*.tar.gz
     
-
     docker images
-    
-    #Replace the docker image in the Makefile
-    ##rnaseq
+        
     OLD_rnaseq="quay.io/ucsc_cgl/rnaseq-cgl-pipeline@sha256:785eee9f750ab91078d84d1ee779b6f74717eafc09e49da817af6b87619b0756"
     NEW_rnaseq=$(docker images --format="{{.Repository}} {{.ID}}" | grep "rnaseq-cgl-pipeline" | cut -d' ' -f2)
 
@@ -58,7 +57,8 @@ load_and_replace_docker_images(){
     echo $NEW_umend
     
     sed -i "s#$OLD_umend#$NEW_umend#g" Makefile
-
+    
+    #Visual check that the Makefile has the new image IDs
     grep -E "$NEW_rnaseq|$NEW_umend" Makefile
 }
 
