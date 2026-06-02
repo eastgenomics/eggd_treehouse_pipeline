@@ -16,7 +16,7 @@ extract_pipeline() {
 
     mkdir /home/dnanexus/repo_extract
 
-    tar xvzf /home/dnanexus/in/github_repo/pipelines.tar.gz -C /home/dnanexus/repo_extract
+    tar xvzf ${github_repo_path##*/} -C /home/dnanexus/repo_extract
 
     REPO_DIR=$(find /home/dnanexus/repo_extract -mindepth 1 -maxdepth 1 -type d | head -n 1)
 
