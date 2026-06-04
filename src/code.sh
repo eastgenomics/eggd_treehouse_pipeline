@@ -23,8 +23,10 @@ _trim_fastq_endings () {
   local read_to_cut=$1
   if [[ "${fastq_array[1]}" == *".fastq.gz" ]]; then
     fastq_suffix=".fastq.gz"
+  elif [[ "${fastq_array[1]}" == *".fq.gz" ]]; then
+    fastq_suffix=".fq.gz"
   else
-    echo "Suffixes of fastq files not recognised as .fastq.gz"
+    echo "Suffixes of fastq files not recognised as .fastq.gz or .fq.gz"
     exit 1
   fi
   
