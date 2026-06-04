@@ -196,7 +196,8 @@ load_and_replace_docker_images(){
     mkdir -p docker_images
     
     ## rnaseq
-    docker load -i /home/dnanexus/in/docker_images/0/*.tar.gz
+    rnaseq=$(ls /home/dnanexus/in/docker_images/*/rnaseq*.tar.gz)
+    docker load -i "$rnaseq"
     
     docker images
         
@@ -208,7 +209,8 @@ load_and_replace_docker_images(){
     sed -i "s#$OLD_rnaseq#$NEW_rnaseq#g" Makefile
 
     ## umendqc
-    docker load -i /home/dnanexus/in/docker_images/1/*.tar.gz
+    umend_qc=$(ls /home/dnanexus/in/docker_images/*/bam_umend_qc*.tar.gz)
+    docker load -i "$umend_qc"
     OLD_umend="ucsctreehouse/bam-umend-qc@sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f"
     NEW_umend=$(docker images --format="{{.Repository}} {{.ID}}" | grep "bam_umend_qc" | cut -d' ' -f2)
     
