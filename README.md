@@ -38,7 +38,7 @@ http://hgdownload.soe.ucsc.edu/treehouse/reference/kallisto_hg38.idx
 ```
 4. **Repository clone** – The Treehouse GitHub pipelines repo is extracted from the tarball github_repo input parameter.
 
-5. **Load and replace docker images** – All the docker images are upaloaded and re-tagged to the correct name so that Docker finds them.
+5. **Load and replace docker images** – All the docker images are uploaded and re-tagged to the correct name so that Docker finds them.
 
 6. **`make expression`** – Runs `quay.io/ucsc_cgl/rnaseq-cgl-pipeline` (v3.3.4-1.12.3) via Docker, using the staged STAR, RSEM, and Kallisto references. Outputs land in `outputs/expression/`.
 
