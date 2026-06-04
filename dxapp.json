@@ -1,103 +1,94 @@
 {
-  "name": "eggd_<tool_name>",
-  "title": "eggd_<tool_name>",
-  "summary": "description",
+  "name": "eggd_treehouse_pipeline",
+  "title": "eggd_treehouse_pipeline",
+  "summary": "DNA Nexus app to run Treehouse pipeline 'expression' and 'qc' functionality ",
   "dxapi": "1.0.0",
   "version": "1.0.0",
-  "properties": {
-    "githubRelease": "1.0.0"
-    },
+  "whatsNew": {
+    "v1.0.0": "Initial release of the Treehouse expression and QC pipeline on DNAnexus"
+  },
   "inputSpec": [
     {
-      "name": "input_file",
-      "class": "file",
-      "optional": true,
-      "label": "Name of input file",
-      "patterns": [
-        "*.tsv", "*.vcf", "*.bed", "*.xlsx"
-      ],
-      "help": "Description"
+      "name": "fastq_R1",
+      "label": "FASTQ R1 file",
+      "help": "Gzipped FASTQ file for read 1 of the sample. Filename must contain _R1, _R1_001, or _1 before the extension so the Treehouse Makefile can detect it.",
+      "class": "array:file",
+      "patterns": ["*.fastq.gz", "*.fq.gz"],
+      "optional": false
     },
     {
-      "name": "input_file_array",
+      "name": "fastq_R2",
+      "label": "FASTQ R2 file",
+      "help": "Gzipped FASTQ file for read 2 of the sample. Filename must contain _R2, _R2_001, or _2 before the extension so the Treehouse Makefile can detect it.",
+      "class": "array:file",
+      "patterns": ["*.fastq.gz", "*.fq.gz"],
+      "optional": false
+    },
+    {
+      "name": "references_files",
       "class": "array:file",
       "optional": false,
-      "label": "Name of input file array",
-      "suggestions": [
-        {
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "path": "/folder1/folder2/"
-        }
-      ],
-      "help": "Description"
+      "label": "Name of reference file array",
+      "help": "Reference files needed to run Treehouse Pipeline: kallisto_hg38.idx, starIndex_hg38_no_alt.tar.gz, rsem_ref_hg38_no_alt.tar.gz"
     },
     {
-      "name": "input_boolean",
-      "class": "boolean",
-      "optional": true,
-      "default": true,
-      "label": "Name of field",
-      "help": "Description"
+      "name": "github_repo",
+      "class": "file",
+      "optional": false,
+      "patterns": ["*.tar.gz"],
+      "label": "GitHub repository of Treehouse pipeline as a tar.gz file",
+      "help": "Tar.gz file of the GitHub repository of Treehouse pipeline",
+      "default": {"$dnanexus_link": "file-J7y8Q284KybJzKk9k5J5B03x"}
     },
     {
-      "name": "input_string",
-      "class": "string",
-      "label": "Input string field name",
-      "optional": true,
-      "default": "default string input",
-      "help": "Description"
+      "name": "docker_images",
+      "class": "array:file",
+      "optional": false,
+      "label": "Docker images for rnaseq-cgl-pipeline, umend_qc and all other required tools",
+      "help": "DNA Nexus file for Docker images for rnaseq-cgl-pipeline, umend_qc and all other required tools",
+      "default": [
+        { "$dnanexus_link": "file-J85YJx84Kyb8626K78BXf7bV" },
+        { "$dnanexus_link": "file-J85YJ3j4KybKffPXvFQqz23Y" },
+        { "$dnanexus_link": "file-J85Vb0j4Kyb5QfxX7G64Q1GP" },
+        { "$dnanexus_link": "file-J85YBBj4Kyb7yJB86jfVbyXf" },
+        { "$dnanexus_link": "file-J85Y6yj4Kyb11V8Gkb45g11P" },
+        { "$dnanexus_link": "file-J85YFJj4Kyb7X80zpf5KXj2y" },
+        { "$dnanexus_link": "file-J85Y3y84Kyb6bpb50XzyVq7B" },
+        { "$dnanexus_link": "file-J85YFx04Kyb954Pb57ZkzqPq" },
+        { "$dnanexus_link": "file-J85Y98Q4Kyb2P6x83KvQF5kJ" },
+        { "$dnanexus_link": "file-J85Y2X04Kyb393q07pjpYVFf" }
+      ]
     }
   ],
   "outputSpec": [
     {
-      "name": "output_file",
-      "class": "file",
-      "label": "output file",
-      "patterns": [
-        "*.tsv", "*.vcf", "*.bed", "*.xlsx"
-      ],
-      "help": "Description"
+      "name": "expression_output",
+      "label": "Expression pipeline output files",
+      "help": "All output files from the Treehouse expression pipeline (outputs/expression/), including the results tar.gz, sorted BAM, and pipeline logs.",
+      "class": "array:file",
+      "patterns": ["*"],
+      "optional": false
     },
     {
-      "name": "output_files_array",
+      "name": "qc_output",
+      "label": "QC pipeline output files",
+      "help": "All output files from the Treehouse bam-umend-qc pipeline (outputs/qc/), including bam_umend_qc.json, bam_umend_qc.tsv, and readDist.txt.",
       "class": "array:file",
-      "label": "output files",
-      "optional": true,
-      "help": "Description"
+      "patterns": ["*"],
+      "optional": false
     }
-
   ],
   "runSpec": {
     "timeoutPolicy": {
       "*": {
-        "hours": 2
+        "hours": 14
       }
     },
     "distribution": "Ubuntu",
     "release": "20.04",
     "version": "0",
     "interpreter": "bash",
-    "file": "src/code.sh",
-    "assetDepends": [
-      {
-        "name": "bedtools",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/bedtools/bedtools_v2.30.0",
-        "version": "2.30.0"
-      },
-      {
-        "name": "htslib",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/htslib/htslib_v1.15.0",
-        "version": "1.15.0"
-      },
-      {
-        "name": "python_packages",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/python_packages/python_packages_v1.1.0",
-        "version": "1.1.0"
-      }
-    ]
+    "file": "src/code.sh"
   },
   "developers":[
     "org-emee_1"
@@ -109,7 +100,7 @@
     "aws:eu-central-1": {
       "systemRequirements": {
         "*": {
-          "instanceType": "mem1_ssd1_v2_x2"
+          "instanceType": "mem2_ssd1_v2_x16"
         }
       }
     }
