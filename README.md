@@ -22,6 +22,7 @@ The app runs per sample.
 | `references_files` | array:file | The three reference files required by the Treehouse pipeline (see below). |
 | `github_repo` | file | Tar.gz file of the GitHub repository to use the Treehouse pipeline. |
 | `docker_images` | array:file | Docker images for required genomic tools (see [here](https://github.com/BD2KGenomics/toil-rnaseq/blob/master/docker/README.md#genomic-tool-containers) and [here](https://github.com/UCSC-Treehouse/pipelines/blob/master/CGL_TOIL_RNA-Seq_Pipeline_versions.md)). |
+| `original_docker_images_names` | file | Original docker images names to be re-tagged for docker images with manifesto v2. |
 
 
 ## How does this app work?
