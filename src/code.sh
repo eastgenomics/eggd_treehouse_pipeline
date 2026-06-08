@@ -200,24 +200,18 @@ load_and_replace_docker_images(){
     ## rnaseq
     rnaseq=$(ls /home/dnanexus/in/docker_images/*/rnaseq*.tar.gz)
     docker load -i "$rnaseq"
-    
-    docker images
-        
-    OLD_rnaseq="quay.io/ucsc_cgl/rnaseq-cgl-pipeline@sha256:785eee9f750ab91078d84d1ee779b6f74717eafc09e49da817af6b87619b0756"
+    OLD_rnaseq=$(grep "rnaseq" /home/dnanexus/in/original_docker_images_names/*txt)
+    echo $OLD_rnaseq
     NEW_rnaseq=$(docker images --format="{{.Repository}} {{.ID}}" | grep "rnaseq-cgl-pipeline" | cut -d' ' -f2)
-
     echo $NEW_rnaseq
-
     sed -i "s#$OLD_rnaseq#$NEW_rnaseq#g" Makefile
 
     ## umendqc
     umend_qc=$(ls /home/dnanexus/in/docker_images/*/bam_umend_qc*.tar.gz)
     docker load -i "$umend_qc"
-    OLD_umend="ucsctreehouse/bam-umend-qc@sha256:5f286d72395fcc5085a96d463ae3511554acfa4951aef7d691bba2181596c31f"
+    OLD_umend=$(grep "bam-umend-qc" /home/dnanexus/in/original_docker_images_names/*txt)
     NEW_umend=$(docker images --format="{{.Repository}} {{.ID}}" | grep "bam_umend_qc" | cut -d' ' -f2)
-    
     echo $NEW_umend
-    
     sed -i "s#$OLD_umend#$NEW_umend#g" Makefile
     
     # Visual check that the Makefile has the new image IDs
@@ -266,37 +260,44 @@ run_load_and_tag_docker(){
     local cutadapt_tar kallisto_tar star_tar rsem_tar fastqc_tar
 
     cutadapt_tar=$(ls /home/dnanexus/in/docker_images/*/cutadapt*.tar.gz)
+    cutadapt_old=$(grep "cutadapt" /home/dnanexus/in/original_docker_images_names/*txt)
+        load_and_tag "$cutadapt_tar" \
+        "$cutadapt_old"
+
     kallisto_tar=$(ls /home/dnanexus/in/docker_images/*/kallisto*.tar.gz)
-    star_tar=$(ls /home/dnanexus/in/docker_images/*/star*.tar.gz)
-    rsem_tar=$(ls /home/dnanexus/in/docker_images/*/rsem_1*.tar.gz)
-    fastqc_tar=$(ls /home/dnanexus/in/docker_images/*/fastqc*.tar.gz)
-    gencode_hugo_mapping_tar=$(ls /home/dnanexus/in/docker_images/*/gencode_hugo_mapping*.tar.gz)
-    samtools_tar=$(ls /home/dnanexus/in/docker_images/*/samtools*.tar.gz)
-    rsem_postprocess_tar=$(ls /home/dnanexus/in/docker_images/*/rsem_postprocess*.tar.gz)
-
-    load_and_tag "$cutadapt_tar" \
-        "quay.io/ucsc_cgl/cutadapt:1.9--6bd44edd2b8f8f17e25c5a268fedaab65fa851d2"
-
+    kallisto_old=$(grep "kallisto" /home/dnanexus/in/original_docker_images_names/*txt)
     load_and_tag "$kallisto_tar" \
-        "quay.io/ucsc_cgl/kallisto:0.43.1--355c19b1fb6fbb85f7f8293e95fb8a1e9d0da163"
-
+        "$kallisto_old"
+    
+    star_tar=$(ls /home/dnanexus/in/docker_images/*/star*.tar.gz)
+    star_old=$(grep "star" /home/dnanexus/in/original_docker_images_names/*txt)
     load_and_tag "$star_tar" \
-        "quay.io/ucsc_cgl/star:2.4.2a--bcbd5122b69ff6ac4ef61958e47bde94001cfe80"
+        "$star_old"
 
-    load_and_tag "$rsem_tar" \
-        "quay.io/ucsc_cgl/rsem:1.2.25--d4275175cc8df36967db460b06337a14f40d2f21"
-
+    rsem_tar=$(ls /home/dnanexus/in/docker_images/*/rsem_1*.tar.gz)
+    rsem_old=$(grep "rsem:" /home/dnanexus/in/original_docker_images_names/*txt) # colon to distinguish from rsem_postprocess
+        load_and_tag "$rsem_tar" \
+        "$rsem_old"
+    
+    fastqc_tar=$(ls /home/dnanexus/in/docker_images/*/fastqc*.tar.gz)
+    fastqc_old=$(grep "fastqc" /home/dnanexus/in/original_docker_images_names/*txt)
     load_and_tag "$fastqc_tar" \
-        "quay.io/ucsc_cgl/fastqc:0.11.5--be13567d00cd4c586edf8ae47d991815c8c72a49"
+        "$fastqc_old"
 
-    load_and_tag "$gencode_hugo_mapping_tar" \
-        "quay.io/ucsc_cgl/gencode_hugo_mapping:1.0--cb4865d02f9199462e66410f515c4dabbd061e4d"
-    
-    load_and_tag "$samtools_tar" \
-        "quay.io/ucsc_cgl/samtools:1.3--256539928ea162949d8a65ca5c79a72ef557ce7c"
-    
+    gencode_hugo_mapping_tar=$(ls /home/dnanexus/in/docker_images/*/gencode_hugo_mapping*.tar.gz)
+    gencode_hugo_mapping_old=$(grep "gencode_hugo_mapping" /home/dnanexus/in/original_docker_images_names/*txt)
+        load_and_tag "$gencode_hugo_mapping_tar" \
+        "$gencode_hugo_mapping_old"
+
+    samtools_tar=$(ls /home/dnanexus/in/docker_images/*/samtools*.tar.gz)
+    samtools_old=$(grep "samtools" /home/dnanexus/in/original_docker_images_names/*txt)    
+        load_and_tag "$samtools_tar" \
+        "$samtools_old"
+
+    rsem_postprocess_tar=$(ls /home/dnanexus/in/docker_images/*/rsem_postprocess*.tar.gz)
+    rsem_postprocess_old=$(grep "rsem_postprocess" /home/dnanexus/in/original_docker_images_names/*txt)
     load_and_tag "$rsem_postprocess_tar" \
-        "jvivian/rsem_postprocess"   
+        "$rsem_postprocess_old"
 }
 
 run_pipelines() {
