@@ -58,6 +58,15 @@
         { "$dnanexus_link": "file-J85Y98Q4Kyb2P6x83KvQF5kJ" },
         { "$dnanexus_link": "file-J85Y2X04Kyb393q07pjpYVFf" }
       ]
+    },
+    {
+      "name": "original_docker_images_names",
+      "class": "file",
+      "optional": false,
+      "patterns": ["*.txt"],
+      "label": "Original docker images names in a .txt file",
+      "help": "Original docker images names to be re-tagged for docker images with manifesto v2",
+      "default": {"$dnanexus_link": "file-J8Y7zx84KybKbyy6yvzb939Z"}
     }
   ],
   "outputSpec": [
